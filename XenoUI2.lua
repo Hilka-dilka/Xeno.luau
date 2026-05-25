@@ -1,4 +1,3 @@
-
 -- Load via loadstring
 local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI.lua"))()
 
@@ -475,7 +474,7 @@ end)
 
 
 ------------------------------------------------------------------------
--- FLY (ИСПРАВЛЕНО)
+-- FLY (FIXED)
 ------------------------------------------------------------------------
 local flyActive = false
 
@@ -650,7 +649,7 @@ local ViewSec = OtherTab:CreateSection("👁 VIEW")
 
 local selectedViewPlayer = nil
 local isSpectating = false
-local viewPlayerDropdown = nil -- объявляем заранее
+local viewPlayerDropdown = nil
 
 local function getViewPlayersList()
     local playersList = {}
@@ -705,7 +704,6 @@ local function stopSpectating()
     end
 end
 
--- СОЗДАЕМ ДРОПДАУН СНАЧАЛА
 viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList(), "Select...", function(selected)
     selectedViewPlayer = selected
     if isSpectating then
@@ -713,7 +711,6 @@ viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList
     end
 end)
 
--- ПОТОМ СОЗДАЕМ КНОПКУ (которая вызывает refreshViewDropdown)
 ViewSec:CreateButton("🔄 Refresh Players", function()
     refreshViewDropdown()
     print("Players list refreshed!")
@@ -733,7 +730,7 @@ end)
 local TeleportSec = OtherTab:CreateSection("📍 TELEPORT")
 
 local selectedPlayer = nil
-local playerDropdown = nil -- объявляем заранее
+local playerDropdown = nil
 
 local function safeTeleport(targetCFrame)
     local char = player.Character
@@ -777,7 +774,6 @@ local function refreshPlayerDropdown()
     print("Players refreshed: " .. table.concat(newList, ", "))
 end
 
--- СОЗДАЕМ ДРОПДАУН СНАЧАЛА
 playerDropdown = TeleportSec:CreateDropdown("Select Player", getPlayersList(), "Select...", function(selected)
     selectedPlayer = selected
     print("Selected: " .. (selected or "none"))
@@ -809,7 +805,6 @@ TeleportSec:CreateButton("🔄 Refresh List", function()
     refreshPlayerDropdown()
 end)
 
--- Teleport to Mouse Toggle (Ctrl + Left Mouse Click)
 teleportToMouseToggle = TeleportSec:CreateToggle("🎯 Teleport to Mouse (Ctrl+LMB)", false, function(v)
     settings.teleportToMouse = v
     print("Teleport to Mouse: " .. (v and "ON" or "OFF"))
@@ -883,7 +878,7 @@ RunService.RenderStepped:Connect(function(dt)
             hum.Jump = true
         end
         
-        -- FLY ЛОГИКА (работает)
+        -- FLY LOGIC (works)
         if flyActive then
             hrp.Velocity = Vector3.zero
             local move = Vector3.zero
@@ -1016,14 +1011,14 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
--- ГЛАВНЫЙ ОБРАБОТЧИК КЛАВИШ (ИСПРАВЛЕН)
+-- MAIN KEY HANDLER (FIXED)
 UIS.InputBegan:Connect(function(i, gp)
     if gp then return end
     
-    -- КНОПКА Q ДЛЯ FLY (ИСПРАВЛЕНО)
+    -- Q KEY FOR FLY (FIXED)
     if i.KeyCode == Enum.KeyCode.Q then
         if settings.fly then
-            -- ВЫКЛЮЧАЕМ
+            -- TURN OFF
             settings.fly = false
             ToggleFly(false)
             if flyToggleSlider then 
@@ -1031,7 +1026,7 @@ UIS.InputBegan:Connect(function(i, gp)
             end
             print("Fly disabled via Q key")
         else
-            -- ВКЛЮЧАЕМ
+            -- TURN ON
             settings.fly = true
             ToggleFly(true)
             if flyToggleSlider then 
@@ -1041,7 +1036,7 @@ UIS.InputBegan:Connect(function(i, gp)
         end
     end
     
-    -- КНОПКА SHIFT+P ДЛЯ FREECAM
+    -- SHIFT+P FOR FREECAM
     if i.KeyCode == Enum.KeyCode.P and UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
         if settings.freecam then
             settings.freecam = false
@@ -1054,7 +1049,7 @@ UIS.InputBegan:Connect(function(i, gp)
         end
     end
     
-    -- КНОПКА ПРОБЕЛ ДЛЯ JUMP BOOST
+    -- SPACE KEY FOR JUMP BOOST
     if i.KeyCode == Enum.KeyCode.Space and settings.jumpBoost and player.Character then
         local hrp = player.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
