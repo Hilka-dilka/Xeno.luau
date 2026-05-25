@@ -1,4 +1,12 @@
--- XENO DARK V17 [ULTIMATE FULL VERSION]
+--[[
+    XENO DARK V17 - MinimalUI Version
+    Все слайдеры заменены на ToggleSlider (тоггл + слайдер в одном)
+    Aimbot секция не тронута
+]]
+
+-- Загрузка библиотеки MinimalUI
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI.lua"))()
+
 local player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -18,21 +26,20 @@ local settings = {
     hitbox = false,
     hitboxSize = 5,
     freecam = false,
-    aimbot = false,           -- Включение аимбота
-    aimbotFov = 90,           -- FOV для аима
-    aimbotSmoothness = 5,     -- Плавность (1-10, где 1 - мгновенно, 10 - очень плавно)
-    aimPart = "Head",         -- Часть тела для наведения
+    aimbot = false,
+    aimbotFov = 90,
+    aimbotSmoothness = 5,
+    aimPart = "Head",
     showFovCircle = false,
-    aimOnKey = true,  
+    aimOnKey = true,
     wallCheck = false,
-    aimKey = Enum.KeyCode.LeftAlt -- Левый альт
+    aimKey = Enum.UserInputType.MouseButton2,
+    gravityEnabled = false,
+    gravityValue = 50
 }
 
 ------------------------------------------------------------------------
 -- ПЛАВНЫЙ АИМБОТ
--- ПЛАВНЫЙ АИМБОТ С ТОЧКОЙ НА ЦЕЛИ И ФИКСАЦИЕЙ
-------------------------------------------------------------------------
--- ПЛАВНЫЙ АИМБОТ С ТОЧКОЙ НА ЦЕЛИ И ФИКСАЦИЕЙ И ПРОВЕРКОЙ СТЕН
 ------------------------------------------------------------------------
 local Drawing = Drawing or {}
 local fovCircle = Drawing.new("Circle")
@@ -46,19 +53,17 @@ if fovCircle then
     fovCircle.Transparency = 0.5
 end
 
--- Создаем точку для отображения цели
 local targetDot = Drawing.new("Circle")
 if targetDot then
     targetDot.Thickness = 2
     targetDot.NumSides = 32
     targetDot.Radius = 6
     targetDot.Filled = true
-    targetDot.Color = Color3.new(1, 1, 1) -- Белый цвет
+    targetDot.Color = Color3.new(1, 1, 1)
     targetDot.Transparency = 0.3
     targetDot.Visible = false
 end
 
--- Создаем обводку для точки
 local targetDotOutline = Drawing.new("Circle")
 if targetDotOutline then
     targetDotOutline.Thickness = 1
@@ -70,14 +75,13 @@ if targetDotOutline then
     targetDotOutline.Visible = false
 end
 
--- Точка для цели за стеной (красная)
 local targetDotWall = Drawing.new("Circle")
 if targetDotWall then
     targetDotWall.Thickness = 2
     targetDotWall.NumSides = 32
     targetDotWall.Radius = 6
     targetDotWall.Filled = true
-    targetDotWall.Color = Color3.new(1, 0, 0) -- Красный цвет
+    targetDotWall.Color = Color3.new(1, 0, 0)
     targetDotWall.Transparency = 0.3
     targetDotWall.Visible = false
 end
@@ -88,7 +92,6 @@ local lockedPart = nil
 local isAiming = false
 local targetVisible = false
 
--- Функция проверки видимости через стену
 local function isTargetVisible(targetPos)
     if not player.Character or not player.Character:FindFirstChild("Head") then return false end
     
@@ -98,7 +101,6 @@ local function isTargetVisible(targetPos)
     local hit, position = workspace:FindPartOnRayWithIgnoreList(ray, {player.Character})
     
     if hit then
-        -- Проверяем, является ли то, во что мы попали, целью или её частью
         if targetPart and (hit:IsDescendantOf(targetPart.Parent) or hit == targetPart) then
             return true
         end
@@ -107,7 +109,6 @@ local function isTargetVisible(targetPos)
     return true
 end
 
--- Функция получения ближайшей цели в FOV
 local function getClosestTarget()
     if not settings.aimbot then return nil, nil end
     
@@ -123,44 +124,34 @@ local function getClosestTarget()
             local humanoid = char:FindFirstChildOfClass("Humanoid")
             
             if humanoid and humanoid.Health > 0 then
-                -- Проверяем разные части тела
                 local parts = {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso", "Torso"}
                 for _, partName in pairs(parts) do
                     local part = char:FindFirstChild(partName)
                     if part then
                         local pos, onScreen = cam:WorldToViewportPoint(part.Position)
                         if onScreen then
-                            -- Расстояние до прицела
                             local aimDist = (Vector2.new(pos.X, pos.Y) - center).Magnitude
                             
-                            -- Расстояние до игрока
                             local playerDist = 0
                             if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                                 local myPos = player.Character.HumanoidRootPart.Position
                                 playerDist = (part.Position - myPos).Magnitude
                             end
                             
-                            -- Проверка видимости (если включена)
-                            -- Проверка видимости (если включена)
--- Проверка видимости (если включена)
-local visible = true
-if settings.wallCheck then
-    visible = isTargetVisible(part.Position)
-end
+                            local visible = true
+                            if settings.wallCheck then
+                                visible = isTargetVisible(part.Position)
+                            end
 
--- Если wallCheck включен и цель невидима - пропускаем её
-if settings.wallCheck and not visible then
-    continue
-end
+                            if not (settings.wallCheck and not visible) then
+                                local score = (aimDist * 0.7) + (playerDist * 0.3)
 
--- Комбинированный score
-local score = (aimDist * 0.7) + (playerDist * 0.3)
-
-if aimDist < closestDist and score < bestScore then
-    bestScore = score
-    closestPlayer = p
-    closestPart = part
-end
+                                if aimDist < closestDist and score < bestScore then
+                                    bestScore = score
+                                    closestPlayer = p
+                                    closestPart = part
+                                end
+                            end
                         end
                     end
                 end
@@ -171,7 +162,6 @@ end
     return closestPlayer, closestPart
 end
 
--- Функция плавного поворота камеры
 local function smoothAim(targetPos, smoothness)
     local currentLook = cam.CFrame.LookVector
     local targetLook = (targetPos - cam.CFrame.Position).Unit
@@ -183,14 +173,11 @@ local function smoothAim(targetPos, smoothness)
     cam.CFrame = newCF
 end
 
--- Отслеживаем нажатие ЛКМ
 UIS.InputBegan:Connect(function(input, gp)
     if gp then return end
     
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        -- При нажатии ЛКМ фиксируем текущую цель и часть тела
         if settings.aimbot and currentTarget and targetPart then
-            -- Проверяем видимость если включена
             if settings.wallCheck then
                 if targetVisible then
                     lockedPart = targetPart
@@ -206,15 +193,12 @@ end)
 
 UIS.InputEnded:Connect(function(input, gp)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        -- При отпускании ЛКМ сбрасываем фиксацию
         isAiming = false
         lockedPart = nil
     end
 end)
 
--- Основной цикл аима
 RunService.RenderStepped:Connect(function()
-    -- Обновляем FOV круг
     if settings.showFovCircle and settings.aimbot and fovCircle then
         fovCircle.Position = Vector2.new(mouse.X, mouse.Y + 60)
         fovCircle.Radius = settings.aimbotFov
@@ -223,35 +207,29 @@ RunService.RenderStepped:Connect(function()
         fovCircle.Visible = false
     end
     
-    -- Получаем цель (только если не в процессе аима)
     if not isAiming then
         local target, part = getClosestTarget()
         currentTarget = target
         targetPart = part
         
-        -- Проверяем видимость цели
         if targetPart and settings.wallCheck then
             targetVisible = isTargetVisible(targetPart.Position)
         else
             targetVisible = true
         end
     else
-        -- Проверяем видимость зафиксированной цели
         if lockedPart and settings.wallCheck then
             targetVisible = isTargetVisible(lockedPart.Position)
         end
     end
     
-    -- Показываем точку на цели
     local showPart = isAiming and lockedPart or targetPart
     if settings.aimbot and showPart and settings.showFovCircle then
         local pos, onScreen = cam:WorldToViewportPoint(showPart.Position)
         if onScreen then
             local dotPos = Vector2.new(pos.X, pos.Y)
             
-            -- Выбираем цвет точки в зависимости от видимости
             if settings.wallCheck and not targetVisible then
-                -- Цель за стеной - красная точка
                 if targetDot then targetDot.Visible = false end
                 if targetDotOutline then targetDotOutline.Visible = false end
                 if targetDotWall then
@@ -259,7 +237,6 @@ RunService.RenderStepped:Connect(function()
                     targetDotWall.Visible = true
                 end
             else
-                -- Цель видна - белая точка с обводкой
                 if targetDot then
                     targetDot.Position = dotPos
                     targetDot.Visible = true
@@ -281,51 +258,49 @@ RunService.RenderStepped:Connect(function()
         if targetDotWall then targetDotWall.Visible = false end
     end
     
-    -- Аим при зажатой кнопке
     if settings.aimbot then
         local shouldAim = false
         
         if settings.aimOnKey then
-    if settings.aimKey == Enum.UserInputType.MouseButton2 then
-        shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
-    elseif settings.aimKey == Enum.UserInputType.MouseButton1 then
-        shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
-    elseif settings.aimKey == Enum.KeyCode.LeftAlt then
-        shouldAim = UIS:IsKeyDown(Enum.KeyCode.LeftAlt)
-    else
-        shouldAim = UIS:IsKeyDown(settings.aimKey)
-    end
-else
-    shouldAim = true
-end
+            if settings.aimKey == Enum.UserInputType.MouseButton2 then
+                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+            elseif settings.aimKey == Enum.UserInputType.MouseButton1 then
+                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
+            elseif settings.aimKey == Enum.KeyCode.LeftAlt then
+                shouldAim = UIS:IsKeyDown(Enum.KeyCode.LeftAlt)
+            else
+                shouldAim = UIS:IsKeyDown(settings.aimKey)
+            end
+        else
+            shouldAim = true
+        end
         
         if shouldAim and (targetPart or lockedPart) then
-    local aimAt = lockedPart or targetPart
-    
-    -- Проверяем видимость для зафиксированной цели
-    local canAim = true
-    if settings.wallCheck and lockedPart then
-        canAim = isTargetVisible(aimAt.Position)
-    end
-    
-    if canAim and aimAt then
-        local smoothness = 11 - settings.aimbotSmoothness
-        smoothAim(aimAt.Position, smoothness)
-    end
-elseif not shouldAim then
-    isAiming = false
-    lockedPart = nil
-end
+            local aimAt = lockedPart or targetPart
+            
+            local canAim = true
+            if settings.wallCheck and lockedPart then
+                canAim = isTargetVisible(aimAt.Position)
+            end
+            
+            if canAim and aimAt then
+                local smoothness = 11 - settings.aimbotSmoothness
+                smoothAim(aimAt.Position, smoothness)
+            end
+        elseif not shouldAim then
+            isAiming = false
+            lockedPart = nil
+        end
     end
 end)
 
 
 ------------------------------------------------------------------------
--- ПОЛНОЦЕННЫЙ FREECAM (С ПРУЖИНАМИ)
+-- FREECAM
 ------------------------------------------------------------------------
 local pi, rad, clamp, exp = math.pi, math.rad, math.clamp, math.exp
-local NAV_GAIN = Vector3.new(1, 1, 1)*64
-local PAN_GAIN = Vector2.new(0.75, 1)*2.5
+local NAV_GAIN = Vector3.new(1, 1, 1)*20
+local PAN_GAIN = Vector2.new(0.2, 0.2)*0.8
 local FOV_GAIN = 300
 local PITCH_LIMIT = rad(90)
 
@@ -407,7 +382,6 @@ local function ToggleFreecam(state)
     end
 end
 
--- Обработка ПКМ для freecam
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and settings.freecam and freecamActive then
         if input.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -437,7 +411,6 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 
--- Клавиши движения
 UIS.InputBegan:Connect(function(i)
     if i.KeyCode and i.KeyCode.Name:len() == 1 then
         InputMap.keys[i.KeyCode.Name] = 1
@@ -450,142 +423,264 @@ UIS.InputEnded:Connect(function(i)
     end
 end)
 
+
 ------------------------------------------------------------------------
--- ИНТЕРФЕЙС
+-- NOCLIP С ИСПРАВЛЕННЫМ ВЫКЛЮЧЕНИЕМ
 ------------------------------------------------------------------------
-local ScreenGui = Instance.new("ScreenGui", player:FindFirstChild("PlayerGui") or player:WaitForChild("PlayerGui"))
-ScreenGui.Name = "XenoDark_V17"
-ScreenGui.ResetOnSpawn = false
+local noclipConnection = nil
+local noclipActive = false
 
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 300, 0, 650)
-MainFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
+local function enableNoclip()
+    if noclipActive then return end
+    noclipActive = true
+    
+    if noclipConnection then noclipConnection:Disconnect() end
+    noclipConnection = RunService.Stepped:Connect(function()
+        if settings.noclip and player.Character then
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end
 
-local UIStroke = Instance.new("UIStroke", MainFrame)
-UIStroke.Color = Color3.fromRGB(0, 60, 150)
-UIStroke.Thickness = 1
+local function disableNoclip()
+    noclipActive = false
+    
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    
+    if player.Character then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+    end
+end
 
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.Text = "XENO DARK V17"
-Title.TextColor3 = Color3.new(1,1,1)
-Title.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-Title.Font = Enum.Font.GothamBold
-Title.TextScaled = true
+local function toggleNoclip(state)
+    settings.noclip = state
+    if state then
+        enableNoclip()
+    else
+        disableNoclip()
+    end
+end
 
-local OpenMiscBtn = Instance.new("TextButton", MainFrame)
-OpenMiscBtn.Size = UDim2.new(0, 30, 0, 30)
-OpenMiscBtn.Position = UDim2.new(1, -35, 0, 5)
-OpenMiscBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-OpenMiscBtn.Text = ">"
-OpenMiscBtn.TextColor3 = Color3.new(1,1,1)
-OpenMiscBtn.TextScaled = true
 
-local MiscFrame = Instance.new("Frame", ScreenGui)
-MiscFrame.Size = UDim2.new(0, 200, 0, 300)
-MiscFrame.Position = MainFrame.Position + UDim2.new(0, 310, 0, 0)
-MiscFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-MiscFrame.Visible = false
-MiscFrame.Active = true
+------------------------------------------------------------------------
+-- MINIMALUI МЕНЮ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+------------------------------------------------------------------------
 
-local MiscStroke = Instance.new("UIStroke", MiscFrame)
-MiscStroke.Color = Color3.fromRGB(0, 60, 150)
-MiscStroke.Thickness = 1
+local Window = UI:CreateWindow("XENO DARK V17")
+Window:SetTheme(Color3.fromRGB(0, 60, 150))
+Window:SetMenuTheme("dark")
 
-OpenMiscBtn.MouseButton1Click:Connect(function() 
-    MiscFrame.Visible = not MiscFrame.Visible
-    OpenMiscBtn.Text = MiscFrame.Visible and "<" or ">"
+local flyToggleSlider = nil
+local walkToggleSlider = nil
+local jumpToggleSlider = nil
+local hitboxToggleSlider = nil
+local freecamToggle = nil
+
+-- Вкладка Combat
+local CombatTab = Window:CreateTab("⚔ COMBAT")
+
+-- Секция Movement (ВСЕ В ОДНОМ TOGGLESLIDER)
+local MovementSec = CombatTab:CreateSection("🏃 MOVEMENT")
+
+-- FLY: тоггл + скорость в одном элементе
+flyToggleSlider = MovementSec:CreateToggleSlider("Fly (Q)", 0.1, 5, 0.8, false, function(enabled, value)
+    settings.fly = enabled
+    settings.flySpeed = value
 end)
 
-local function NewToggle(parent, text, pos, key)
-    local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0.9, 0, 0, 30)
-    btn.Position = UDim2.new(0.05, 0, 0, pos)
-    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    btn.TextColor3 = Color3.new(0.7, 0.7, 0.7)
-    btn.Text = text .. ": OFF"
-    btn.Font = Enum.Font.Gotham
-    btn.BorderSizePixel = 0
-    btn.TextScaled = true
+-- WALK BOOST: тоггл + сила в одном элементе
+walkToggleSlider = MovementSec:CreateToggleSlider("Walk Boost", 0.1, 3, 0.5, false, function(enabled, value)
+    settings.walkBoost = enabled
+    settings.walkPower = value
+end)
+
+-- JUMP BOOST: тоггл + сила прыжка в одном элементе
+jumpToggleSlider = MovementSec:CreateToggleSlider("Jump Boost", 1, 15, 3.5, false, function(enabled, value)
+    settings.jumpBoost = enabled
+    settings.jumpPower = value
+end)
+
+-- No Jump Cooldown (отдельный тоггл, без слайдера)
+MovementSec:CreateToggle("No Jump Cooldown", false, function(v)
+    settings.noJumpCooldown = v
+end)
+
+-- Секция Visual
+local VisualSec = CombatTab:CreateSection("👁 VISUAL")
+
+-- ESP (отдельный тоггл)
+VisualSec:CreateToggle("ESP Full", false, function(v)
+    settings.esp = v
+end)
+
+-- FullBright (отдельный тоггл)
+VisualSec:CreateToggle("FullBright", false, function(v)
+    settings.fullbright = v
+end)
+
+-- NoClip (отдельный тоггл)
+VisualSec:CreateToggle("NoClip", false, function(v)
+    toggleNoclip(v)
+end)
+
+-- HITBOX: тоггл + размер в одном элементе
+hitboxToggleSlider = VisualSec:CreateToggleSlider("Hitbox Extender", 1, 20, 5, false, function(enabled, value)
+    settings.hitbox = enabled
+    settings.hitboxSize = value
+end)
+
+-- Freecam (отдельный тоггл)
+freecamToggle = VisualSec:CreateToggle("Freecam (Shift+P)", false, function(v)
+    settings.freecam = v
+    ToggleFreecam(settings.freecam)
+end)
+
+-- Секция Aimbot (без изменений)
+local AimbotSec = CombatTab:CreateSection("🎯 AIMBOT")
+AimbotSec:CreateToggle("Enable Aimbot", false, function(v)
+    settings.aimbot = v
+end)
+AimbotSec:CreateSlider("Aimbot FOV", 10, 360, 90, function(v)
+    settings.aimbotFov = v
+    if fovCircle then
+        fovCircle.Radius = v
+    end
+end)
+AimbotSec:CreateSlider("Smoothness", 1, 10, 5, function(v)
+    settings.aimbotSmoothness = v
+end)
+AimbotSec:CreateToggle("Show FOV Circle", false, function(v)
+    settings.showFovCircle = v
+end)
+AimbotSec:CreateToggle("Aim on Key (RMB)", true, function(v)
+    settings.aimOnKey = v
+end)
+AimbotSec:CreateToggle("Wall Check", false, function(v)
+    settings.wallCheck = v
+end)
+
+------------------------------------------------------------------------
+-- ВКЛАДКА OTHER (ИСПРАВЛЕННАЯ ТЕЛЕПОРТАЦИЯ ДЛЯ FREECAM)
+------------------------------------------------------------------------
+local OtherTab = Window:CreateTab("🛠 OTHER")
+local OtherSec = OtherTab:CreateSection("📍 TELEPORT")
+
+local selectedPlayer = nil
+
+-- Функция для временного отключения анкора при телепортации
+local function safeTeleport(targetCFrame)
+    local char = player.Character
+    if not char then return end
     
-    btn.MouseButton1Click:Connect(function()
-        settings[key] = not settings[key]
-        btn.TextColor3 = settings[key] and Color3.fromRGB(0, 180, 255) or Color3.new(0.7, 0.7, 0.7)
-        btn.Text = text .. ": " .. (settings[key] and "ON" or "OFF")
-        
-        if key == "freecam" then 
-            ToggleFreecam(settings.freecam) 
-        end
-    end)
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    
+    -- Запоминаем был ли персонаж заанкорен (из-за freecam)
+    local wasAnchored = hrp.Anchored
+    
+    -- Если заанкорен - временно отключаем
+    if wasAnchored then
+        hrp.Anchored = false
+    end
+    
+    -- Телепортируем
+    hrp.CFrame = targetCFrame
+    
+    -- Небольшая задержка чтобы телепорт прошел
+    task.wait(0.05)
+    
+    -- Возвращаем anchor обратно если был
+    if wasAnchored then
+        hrp.Anchored = true
+    end
 end
 
-local function NewSlider(parent, text, pos, min, max, default, key)
-    local label = Instance.new("TextLabel", parent)
-    label.Size = UDim2.new(0.9, 0, 0, 20)
-    label.Position = UDim2.new(0.05, 0, 0, pos)
-    label.Text = text .. ": " .. default
-    label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.fromRGB(0, 150, 255)
-    label.TextSize = 12
-    
-    local sliderBg = Instance.new("Frame", parent)
-    sliderBg.Size = UDim2.new(0.9, 0, 0, 6)
-    sliderBg.Position = UDim2.new(0.05, 0, 0, pos + 22)
-    sliderBg.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-    
-    local fill = Instance.new("Frame", sliderBg)
-    fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0)
-    fill.BackgroundColor3 = Color3.fromRGB(0, 60, 150)
-    fill.BorderSizePixel = 0
-    
-    sliderBg.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local con
-            con = RunService.RenderStepped:Connect(function()
-                if not UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-                    con:Disconnect()
-                else
-                    local rel = math.clamp((UIS:GetMouseLocation().X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X, 0, 1)
-                    fill.Size = UDim2.new(rel, 0, 1, 0)
-                    local val = math.floor((min + (max - min) * rel) * 10) / 10
-                    label.Text = text .. ": " .. val
-                    settings[key] = val
-                    
-                    if key == "aimbotFov" and fovCircle then
-                        fovCircle.Radius = val
-                    end
-                end
-            end)
+-- Функция обновления списка игроков
+local function getPlayersList()
+    local playersList = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then
+            table.insert(playersList, p.Name)
         end
-    end)
+    end
+    if #playersList == 0 then
+        table.insert(playersList, "No players")
+    end
+    return playersList
 end
 
--- Основные функции
-NewToggle(MainFrame, "Fly (Q)", 50, "fly")
-NewSlider(MainFrame, "Fly Speed", 85, 0.1, 5, 0.8, "flySpeed")
-NewToggle(MainFrame, "Walk TP", 130, "walkBoost")
-NewSlider(MainFrame, "Walk Power", 165, 0.1, 3, 0.5, "walkPower")
-NewToggle(MainFrame, "Jump TP", 210, "jumpBoost")
-NewSlider(MainFrame, "Jump Power", 245, 1, 15, 3.5, "jumpPower")
-NewToggle(MainFrame, "Hitbox", 290, "hitbox")
-NewSlider(MainFrame, "Size", 325, 1, 20, 5, "hitboxSize")
-NewToggle(MainFrame, "ESP FULL", 370, "esp")
+-- Создаем дропдаун с выбором игрока
+local playerDropdown = OtherSec:CreateDropdown("Select Player", getPlayersList(), "Select...", function(selected)
+    selectedPlayer = selected
+    print("Selected: " .. (selected or "none"))
+end)
 
--- AIMBOT секция
-NewToggle(MainFrame, "Aimbot", 410, "aimbot")
-NewSlider(MainFrame, "FOV", 445, 10, 360, 90, "aimbotFov")
-NewSlider(MainFrame, "Smoothness", 480, 1, 10, 5, "aimbotSmoothness")
-NewToggle(MainFrame, "Show FOV Circle", 515, "showFovCircle")
-NewToggle(MainFrame, "Aim on Key (PKM)", 550, "aimOnKey")
-NewToggle(MainFrame, "Wall Check", 585, "wallCheck")
+-- Кнопка телепортации к выбранному игроку (с учетом freecam)
+OtherSec:CreateButton("📌 Teleport to Selected", function()
+    if selectedPlayer and selectedPlayer ~= "No players" and selectedPlayer ~= "Select..." then
+        local target = Players:FindFirstChild(selectedPlayer)
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            safeTeleport(target.Character.HumanoidRootPart.CFrame)
+            print("Teleported to " .. selectedPlayer)
+        else
+            print("Player not found or no character: " .. selectedPlayer)
+        end
+    else
+        print("Select a player first!")
+    end
+end)
 
-NewToggle(MiscFrame, "FullBright", 40, "fullbright")
-NewToggle(MiscFrame, "NoClip", 80, "noclip")
-NewToggle(MiscFrame, "No Jump Cooldown", 120, "noJumpCooldown")
-NewToggle(MiscFrame, "Freecam (Sh+P)", 160, "freecam")
+-- Кнопка телепортации на позицию камеры (с учетом freecam)
+OtherSec:CreateButton("🎥 Teleport to Camera", function()
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        safeTeleport(cam.CFrame)
+        print("Teleported to camera position")
+    end
+end)
+
+-- Кнопка обновления списка
+OtherSec:CreateButton("🔄 Refresh List", function()
+    local newList = getPlayersList()
+    print("Players refreshed: " .. table.concat(newList, ", "))
+end)
+
+-- Секция Gravity
+local GravitySec = OtherTab:CreateSection("🌍 GRAVITY")
+
+GravitySec:CreateToggleSlider("Gravity Control", 0, 196.2, 50, false, function(enabled, value)
+    settings.gravityEnabled = enabled
+    settings.gravityValue = value
+    
+    if enabled then
+        workspace.Gravity = value
+    else
+        workspace.Gravity = 196.2
+    end
+end)
+
+-- Вкладка Info (без изменений)
+local InfoTab = Window:CreateTab("ℹ INFO")
+local InfoSec = InfoTab:CreateSection("ABOUT")
+InfoSec:CreateButton("XENO DARK V17", function()
+    print("XENO DARK V17 - Ultimate Cheat Hub")
+end)
+InfoSec:CreateButton("Credits: Xeno Team", function() end)
+InfoSec:CreateButton("Version: 17.0", function() end)
+
+Window:SetKey(Enum.KeyCode.RightControl)
+
 
 ------------------------------------------------------------------------
 -- ОСНОВНОЙ ЛУП
@@ -600,13 +695,11 @@ RunService.RenderStepped:Connect(function(dt)
     local hum = char:FindFirstChildOfClass("Humanoid")
     
     if hrp and hum and not settings.freecam then
-        -- No jump cooldown
         if settings.noJumpCooldown and UIS:IsKeyDown(Enum.KeyCode.Space) then
             hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
             hum.Jump = true
         end
         
-        -- Fly
         if settings.fly then
             hrp.Velocity = Vector3.zero
             local move = Vector3.zero
@@ -619,20 +712,20 @@ RunService.RenderStepped:Connect(function(dt)
             end
         end
         
-        -- Walk boost
         if settings.walkBoost and hum.MoveDirection.Magnitude > 0 then
             hrp.CFrame = hrp.CFrame + hum.MoveDirection * settings.walkPower
         end
     end
     
-    -- Fullbright
     if settings.fullbright then
         Lighting.Brightness = 2
         Lighting.ClockTime = 14
         Lighting.GlobalShadows = false
+    else
+        Lighting.Brightness = 1
+        Lighting.GlobalShadows = true
     end
     
-    -- ESP
     if tick() - lastESPUpdate > 0.3 then
         lastESPUpdate = tick()
         
@@ -704,7 +797,6 @@ RunService.RenderStepped:Connect(function(dt)
         end
     end
     
-    -- Hitbox
     if settings.hitbox then
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= player and p.Character and p.Character:FindFirstChild("Head") then
@@ -716,28 +808,30 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
--- Noclip
-RunService.Stepped:Connect(function()
-    if settings.noclip and player.Character then
-        for _, part in pairs(player.Character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
-end)
-
--- Jump boost и hotkeys
+-- Хоткеи
 UIS.InputBegan:Connect(function(i, gp)
     if gp then return end
     
     if i.KeyCode == Enum.KeyCode.Q then
-        settings.fly = not settings.fly
+        if settings.fly then
+            settings.fly = false
+            if flyToggle then flyToggle:Set(false) end
+        else
+            settings.fly = true
+            if flyToggle then flyToggle:Set(true) end
+        end
     end
     
     if i.KeyCode == Enum.KeyCode.P and UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
-        settings.freecam = not settings.freecam
-        ToggleFreecam(settings.freecam)
+        if settings.freecam then
+            settings.freecam = false
+            ToggleFreecam(false)
+            if freecamToggle then freecamToggle:Set(false) end
+        else
+            settings.freecam = true
+            ToggleFreecam(true)
+            if freecamToggle then freecamToggle:Set(true) end
+        end
     end
     
     if i.KeyCode == Enum.KeyCode.Space and settings.jumpBoost and player.Character then
@@ -748,29 +842,4 @@ UIS.InputBegan:Connect(function(i, gp)
     end
 end)
 
--- Drag GUI
-local dragging, dragStart, startPos
-
-Title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainFrame.Position
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        MiscFrame.Position = MainFrame.Position + UDim2.new(0, 310, 0, 0)
-    end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
-print("XenoDark V17 [AIMBOT] Loaded! Плавный аим с регулировкой скорости")
+print("XENO DARK V17 [MinimalUI] Loaded! Все слайдеры заменены на ToggleSlider!")
