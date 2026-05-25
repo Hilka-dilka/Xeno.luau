@@ -1,9 +1,3 @@
---[[
-    XENO DARK V17 - MinimalUI Version (FIXED)
-]]
-
--- MinimalUI
-local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI.lua"))()
 
 local player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
@@ -547,7 +541,7 @@ end
 -- UI
 ------------------------------------------------------------------------
 
-local Window = UI:CreateWindow("XENO DARK V17")
+local Window = MinimalUI:CreateWindow("XENO DARK V17")
 Window:SetTheme(Color3.fromRGB(0, 60, 150))
 Window:SetMenuTheme("dark")
 
@@ -652,6 +646,7 @@ local ViewSec = OtherTab:CreateSection("👁 VIEW")
 
 local selectedViewPlayer = nil
 local isSpectating = false
+local viewPlayerDropdown = nil -- объявляем заранее
 
 local function getViewPlayersList()
     local playersList = {}
@@ -667,6 +662,10 @@ local function getViewPlayersList()
 end
 
 local function refreshViewDropdown()
+    if not viewPlayerDropdown then 
+        print("viewPlayerDropdown is nil, cannot refresh")
+        return 
+    end
     local newList = getViewPlayersList()
     viewPlayerDropdown:SetOptions(newList)
     if #newList > 0 and newList[1] ~= "No players" then
@@ -702,13 +701,15 @@ local function stopSpectating()
     end
 end
 
-local viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList(), "Select...", function(selected)
+-- СОЗДАЕМ ДРОПДАУН СНАЧАЛА
+viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList(), "Select...", function(selected)
     selectedViewPlayer = selected
     if isSpectating then
         startSpectating()
     end
 end)
 
+-- ПОТОМ СОЗДАЕМ КНОПКУ (которая вызывает refreshViewDropdown)
 ViewSec:CreateButton("🔄 Refresh Players", function()
     refreshViewDropdown()
     print("Players list refreshed!")
@@ -728,6 +729,7 @@ end)
 local TeleportSec = OtherTab:CreateSection("📍 TELEPORT")
 
 local selectedPlayer = nil
+local playerDropdown = nil -- объявляем заранее
 
 local function safeTeleport(targetCFrame)
     local char = player.Character
@@ -764,7 +766,15 @@ local function getPlayersList()
     return playersList
 end
 
-local playerDropdown = TeleportSec:CreateDropdown("Select Player", getPlayersList(), "Select...", function(selected)
+local function refreshPlayerDropdown()
+    if not playerDropdown then return end
+    local newList = getPlayersList()
+    playerDropdown:SetOptions(newList)
+    print("Players refreshed: " .. table.concat(newList, ", "))
+end
+
+-- СОЗДАЕМ ДРОПДАУН СНАЧАЛА
+playerDropdown = TeleportSec:CreateDropdown("Select Player", getPlayersList(), "Select...", function(selected)
     selectedPlayer = selected
     print("Selected: " .. (selected or "none"))
 end)
@@ -791,11 +801,8 @@ TeleportSec:CreateButton("🎥 Teleport to Camera", function()
     end
 end)
 
-
 TeleportSec:CreateButton("🔄 Refresh List", function()
-    local newList = getPlayersList()
-    playerDropdown:SetOptions(newList)
-    print("Players refreshed: " .. table.concat(newList, ", "))
+    refreshPlayerDropdown()
 end)
 
 -- Teleport to Mouse Toggle (Ctrl + Left Mouse Click)
