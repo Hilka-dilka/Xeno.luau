@@ -1,5 +1,5 @@
 --[[
-    XENO DARK V17 - MinimalUI Version
+    XENO DARK V17 - MinimalUI Version (FIXED)
 ]]
 
 -- MinimalUI
@@ -25,7 +25,7 @@ local settings = {
     hitboxSize = 5,
     freecam = false,
     aimbot = false,
-    aimbotFov = 90,
+    aimbotFov =90,
     aimbotSmoothness = 5,
     aimPart = "Head",
     showFovCircle = false,
@@ -446,6 +446,24 @@ end)
 
 
 ------------------------------------------------------------------------
+-- FLY (ИСПРАВЛЕНО)
+------------------------------------------------------------------------
+local flyActive = false
+
+local function ToggleFly(state)
+    flyActive = state
+    settings.fly = state
+    
+    if not state then
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local hrp = char.HumanoidRootPart
+            hrp.Velocity = Vector3.zero
+        end
+    end
+end
+
+------------------------------------------------------------------------
 -- NOCLIP
 ------------------------------------------------------------------------
 local noclipConnection = nil
@@ -517,6 +535,8 @@ local MovementSec = CombatTab:CreateSection("🏃 MOVEMENT")
 flyToggleSlider = MovementSec:CreateToggleSlider("Fly (Q)", 0.1, 5, 0.8, false, function(enabled, value)
     settings.fly = enabled
     settings.flySpeed = value
+    ToggleFly(enabled)
+    print("Fly toggled via UI:", enabled, "Speed:", value)
 end)
 
 walkToggleSlider = MovementSec:CreateToggleSlider("Walk Boost", 0.1, 3, 0.5, false, function(enabled, value)
@@ -653,7 +673,6 @@ end
 local viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList(), "Select...", function(selected)
     selectedViewPlayer = selected
     if isSpectating then
-        -- If currently spectating, update to new player
         startSpectating()
     end
 end)
@@ -812,13 +831,15 @@ RunService.RenderStepped:Connect(function(dt)
             hum.Jump = true
         end
         
-        if settings.fly then
+        -- FLY ЛОГИКА (работает)
+        if flyActive then
             hrp.Velocity = Vector3.zero
             local move = Vector3.zero
             if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
             if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
             if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
             if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
+            
             if move.Magnitude > 0 then
                 hrp.CFrame = hrp.CFrame + move.Unit * settings.flySpeed
             end
@@ -943,54 +964,45 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
+-- ГЛАВНЫЙ ОБРАБОТЧИК КЛАВИШ (ИСПРАВЛЕН)
 UIS.InputBegan:Connect(function(i, gp)
     if gp then return end
     
+    -- КНОПКА Q ДЛЯ FLY (ИСПРАВЛЕНО)
     if i.KeyCode == Enum.KeyCode.Q then
         if settings.fly then
+            -- ВЫКЛЮЧАЕМ
             settings.fly = false
+            ToggleFly(false)
             if flyToggleSlider then 
-                flyToggleSlider:Set(false)
-                -- Принудительно обновляем состояние тоггла в UI
-                flyToggleSlider:SetValue(false)
+                flyToggleSlider:SetEnabled(false)
             end
+            print("Fly disabled via Q key")
         else
+            -- ВКЛЮЧАЕМ
             settings.fly = true
+            ToggleFly(true)
             if flyToggleSlider then 
-                flyToggleSlider:Set(true)
-                -- Принудительно обновляем состояние тоггла в UI
-                flyToggleSlider:SetValue(true)
+                flyToggleSlider:SetEnabled(true)
             end
+            print("Fly enabled via Q key")
         end
     end
     
+    -- КНОПКА SHIFT+P ДЛЯ FREECAM
     if i.KeyCode == Enum.KeyCode.P and UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
         if settings.freecam then
             settings.freecam = false
             ToggleFreecam(false)
-            if freecamToggle then 
-                freecamToggle:Set(false)
-                freecamToggle:SetValue(false)
-            end
+            if freecamToggle then freecamToggle:Set(false) end
         else
             settings.freecam = true
             ToggleFreecam(true)
-            if freecamToggle then 
-                freecamToggle:Set(true)
-                freecamToggle:SetValue(true)
-            end
+            if freecamToggle then freecamToggle:Set(true) end
         end
     end
     
-    -- Отдельно для ноклипа, если хочешь добавить горячую клавишу
-    -- if i.KeyCode == Enum.KeyCode.N and UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
-    --     if settings.noclip then
-    --         toggleNoclip(false)
-    --     else
-    --         toggleNoclip(true)
-    --     end
-    -- end
-    
+    -- КНОПКА ПРОБЕЛ ДЛЯ JUMP BOOST
     if i.KeyCode == Enum.KeyCode.Space and settings.jumpBoost and player.Character then
         local hrp = player.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
@@ -1004,6 +1016,5 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 player.CameraMaxZoomDistance = 1000
--- player.CameraMinZoomDistance = 10
 
-print("XENO DARK V17 [MinimalUI] Loaded! ESP fix")
+print("XENO DARK V17 [MinimalUI] Loaded! Fly Q key FIXED!")
