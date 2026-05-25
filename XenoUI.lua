@@ -1,4 +1,8 @@
 
+-- Load via loadstring
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI.lua"))()
+
+
 local player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -541,7 +545,7 @@ end
 -- UI
 ------------------------------------------------------------------------
 
-local Window = MinimalUI:CreateWindow("XENO DARK V17")
+local Window = UI:CreateWindow("XENO DARK V17")
 Window:SetTheme(Color3.fromRGB(0, 60, 150))
 Window:SetMenuTheme("dark")
 
