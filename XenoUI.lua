@@ -296,10 +296,10 @@ end)
 
 
 ------------------------------------------------------------------------
--- FREECAM
+-- FREECAM (ИСПРАВЛЕННАЯ ВЕРСИЯ - движение без зажатой ПКМ)
 ------------------------------------------------------------------------
 local pi, rad, clamp, exp = math.pi, math.rad, math.clamp, math.exp
-local NAV_GAIN = Vector3.new(1, 1, 1)*20
+local NAV_GAIN = Vector3.new(1, 1, 1)*64
 local PAN_GAIN = Vector2.new(0.2, 0.2)*0.8
 local FOV_GAIN = 300
 local PITCH_LIMIT = rad(90)
@@ -330,51 +330,79 @@ local velSpring, panSpring, fovSpring = Spring.new(1.5, Vector3.new()), Spring.n
 local InputMap = {keys = {W=0,A=0,S=0,D=0,E=0,Q=0}, mouse = {Delta = Vector2.new(), Wheel = 0}}
 local freecamActive = false
 local rightMousePressed = false
+local lastMousePos = nil -- Для сохранения позиции мыши
 
 local function StepFreecam(dt)
-    if not freecamActive or not rightMousePressed then 
-        if not rightMousePressed and freecamActive then
-            local vel = velSpring:Update(dt, Vector3.new(InputMap.keys.D - InputMap.keys.A, InputMap.keys.E - InputMap.keys.Q, InputMap.keys.S - InputMap.keys.W) * (UIS:IsKeyDown(Enum.KeyCode.LeftShift) and 0.25 or 1))
-            local fov = fovSpring:Update(dt, InputMap.mouse.Wheel)
-            InputMap.mouse.Wheel = 0
-            cameraFov = clamp(cameraFov + fov*FOV_GAIN*dt, 1, 120)
-            cameraPos = cameraPos + vel*NAV_GAIN*dt
-            local cf = CFrame.new(cameraPos)*CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)
-            cam.CFrame, cam.Focus, cam.FieldOfView = cf, cf, cameraFov
-        end
+    if not freecamActive then 
         return 
     end
     
-    local vel = velSpring:Update(dt, Vector3.new(InputMap.keys.D - InputMap.keys.A, InputMap.keys.E - InputMap.keys.Q, InputMap.keys.S - InputMap.keys.W) * (UIS:IsKeyDown(Enum.KeyCode.LeftShift) and 0.25 or 1))
-    local pan = panSpring:Update(dt, InputMap.mouse.Delta)
-    InputMap.mouse.Delta = Vector2.new()
+    -- Обновляем векторы движения (всегда, независимо от ПКМ)
+    local moveDir = Vector3.new(InputMap.keys.D - InputMap.keys.A, InputMap.keys.E - InputMap.keys.Q, InputMap.keys.S - InputMap.keys.W)
+    local speedMult = (UIS:IsKeyDown(Enum.KeyCode.LeftShift) and 0.25 or 1)
+    local vel = velSpring:Update(dt, moveDir * speedMult)
+    
+    -- Обновляем зум колесиком (всегда)
     local fov = fovSpring:Update(dt, InputMap.mouse.Wheel)
     InputMap.mouse.Wheel = 0
     cameraFov = clamp(cameraFov + fov*FOV_GAIN*dt, 1, 120)
-    cameraRot = cameraRot + pan*PAN_GAIN*dt
-    cameraRot = Vector2.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y%(2*pi))
-    local cf = CFrame.new(cameraPos)*CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)*CFrame.new(vel*NAV_GAIN*dt)
-    cameraPos, cam.CFrame, cam.Focus, cam.FieldOfView = cf.p, cf, cf, cameraFov
+    
+    -- Если зажата ПКМ - обновляем поворот камеры от движения мыши
+    if rightMousePressed then
+        local pan = panSpring:Update(dt, InputMap.mouse.Delta)
+        InputMap.mouse.Delta = Vector2.new()
+        cameraRot = cameraRot + pan*PAN_GAIN*dt
+        cameraRot = Vector2.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y%(2*pi))
+    end
+    
+    -- Двигаем позицию камеры (всегда, используя текущий cameraRot)
+    local moveVector = Vector3.new()
+    if vel.X ~= 0 or vel.Y ~= 0 or vel.Z ~= 0 then
+        -- Преобразуем движение в локальные координаты камеры
+        local camForward = CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0).LookVector
+        local camRight = CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0).RightVector
+        local camUp = CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0).UpVector
+        
+        moveVector = moveVector + camForward * vel.Z  -- W/S
+        moveVector = moveVector + camRight * vel.X   -- A/D
+        moveVector = moveVector + camUp * vel.Y      -- E/Q
+    end
+    
+    cameraPos = cameraPos + moveVector * NAV_GAIN * dt
+    
+    -- Применяем CFrame камеры
+    local cf = CFrame.new(cameraPos) * CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)
+    cam.CFrame = cf
+    cam.Focus = cf
+    cam.FieldOfView = cameraFov
 end
 
 local function ToggleFreecam(state)
     if state then
         local cf = cam.CFrame
-        cameraRot, cameraPos, cameraFov = Vector2.new(cf:toEulerAnglesYXZ()), cf.p, cam.FieldOfView
+        cameraRot = Vector2.new(cf:toEulerAnglesYXZ())
+        cameraPos = cf.p
+        cameraFov = cam.FieldOfView
         velSpring:Reset(Vector3.new())
         panSpring:Reset(Vector2.new())
         fovSpring:Reset(0)
+        
+        -- Отключаем коллизии персонажа при включении freecam
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             player.Character.HumanoidRootPart.Anchored = true
         end
+        
         RunService:BindToRenderStep("Freecam", 201, StepFreecam)
         freecamActive = true
         UIS.MouseBehavior = Enum.MouseBehavior.Default
     else
         RunService:UnbindFromRenderStep("Freecam")
+        
+        -- Включаем коллизии обратно
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             player.Character.HumanoidRootPart.Anchored = false
         end
+        
         cam.CameraType = Enum.CameraType.Custom
         freecamActive = false
         rightMousePressed = false
@@ -382,6 +410,7 @@ local function ToggleFreecam(state)
     end
 end
 
+-- Обработка ПКМ
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and settings.freecam and freecamActive then
         if input.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -400,6 +429,7 @@ UIS.InputEnded:Connect(function(input, gameProcessed)
     end
 end)
 
+-- Обработка движения мыши для поворота
 UIS.InputChanged:Connect(function(input)
     if settings.freecam and freecamActive and rightMousePressed then
         if input.UserInputType == Enum.UserInputType.MouseMovement then
@@ -411,14 +441,15 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 
+-- Обработка клавиш движения (всегда работает)
 UIS.InputBegan:Connect(function(i)
-    if i.KeyCode and i.KeyCode.Name:len() == 1 then
+    if i.KeyCode and i.KeyCode.Name:len() == 1 and settings.freecam and freecamActive then
         InputMap.keys[i.KeyCode.Name] = 1
     end
 end)
 
 UIS.InputEnded:Connect(function(i)
-    if i.KeyCode and i.KeyCode.Name:len() == 1 then
+    if i.KeyCode and i.KeyCode.Name:len() == 1 and settings.freecam and freecamActive then
         InputMap.keys[i.KeyCode.Name] = 0
     end
 end)
@@ -683,9 +714,34 @@ Window:SetKey(Enum.KeyCode.RightControl)
 
 
 ------------------------------------------------------------------------
--- ОСНОВНОЙ ЛУП
+-- ОСНОВНОЙ ЛУП С ИСПРАВЛЕННЫМ ESP
 ------------------------------------------------------------------------
 local lastESPUpdate = 0
+
+-- Функция полной очистки ESP
+local function clearAllESP()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local c = p.Character
+            
+            -- Удаляем Highlight
+            if c:FindFirstChild("XenoESP_Highlight") then
+                c.XenoESP_Highlight:Destroy()
+            end
+            
+            -- Удаляем BillboardGui с именем
+            if c:FindFirstChild("XenoESP_Name") then
+                c.XenoESP_Name:Destroy()
+            end
+            
+            -- Удаляем бокс из HumanoidRootPart или Torso
+            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+            if root and root:FindFirstChild("XenoESP_Box") then
+                root.XenoESP_Box:Destroy()
+            end
+        end
+    end
+end
 
 RunService.RenderStepped:Connect(function(dt)
     local char = player.Character
@@ -726,47 +782,54 @@ RunService.RenderStepped:Connect(function(dt)
         Lighting.GlobalShadows = true
     end
     
-    if tick() - lastESPUpdate > 0.3 then
-        lastESPUpdate = tick()
-        
-        for _, p in pairs(Players:GetPlayers()) do
-            if p ~= player and p.Character then
-                local c = p.Character
-                
-                if settings.esp then
-                    if not c:FindFirstChild("XenoESP_Highlight") then
-                        local h = Instance.new("Highlight", c)
-                        h.Name = "XenoESP_Highlight"
-                        h.FillColor = Color3.fromRGB(0, 60, 150)
-                        h.FillTransparency = 0.5
-                        h.OutlineColor = Color3.new(1, 1, 1)
-                        h.OutlineTransparency = 0
-                    end
+    -- ESP обновление (только если включен)
+    if settings.esp then
+        if tick() - lastESPUpdate > 0.3 then
+            lastESPUpdate = tick()
+            
+            for _, p in pairs(Players:GetPlayers()) do
+                if p ~= player and p.Character then
+                    local c = p.Character
+                    local humTarget = c:FindFirstChildOfClass("Humanoid")
                     
-                    if not c:FindFirstChild("XenoESP_Name") then
-                        local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-                        if root then
-                            local bg = Instance.new("BillboardGui", c)
-                            bg.Name = "XenoESP_Name"
-                            bg.Size = UDim2.new(0, 100, 0, 30)
-                            bg.StudsOffset = Vector3.new(0, 3, 0)
-                            bg.AlwaysOnTop = true
-                            
-                            local name = Instance.new("TextLabel", bg)
-                            name.Size = UDim2.new(1, 0, 1, 0)
-                            name.BackgroundTransparency = 1
-                            name.Text = p.Name
-                            name.TextColor3 = Color3.new(1, 1, 1)
-                            name.TextStrokeColor3 = Color3.new(0, 0, 0)
-                            name.TextStrokeTransparency = 0
-                            name.Font = Enum.Font.GothamBold
-                            name.TextSize = 13
+                    -- Пропускаем мертвых
+                    if humTarget and humTarget.Health > 0 then
+                        
+                        -- Highlight
+                        if not c:FindFirstChild("XenoESP_Highlight") then
+                            local h = Instance.new("Highlight", c)
+                            h.Name = "XenoESP_Highlight"
+                            h.FillColor = Color3.fromRGB(0, 60, 150)
+                            h.FillTransparency = 0.5
+                            h.OutlineColor = Color3.new(1, 1, 1)
+                            h.OutlineTransparency = 0
                         end
-                    end
-                    
-                    if not c:FindFirstChild("XenoESP_Box") then
+                        
+                        -- BillboardGui с именем
+                        if not c:FindFirstChild("XenoESP_Name") then
+                            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+                            if root then
+                                local bg = Instance.new("BillboardGui", c)
+                                bg.Name = "XenoESP_Name"
+                                bg.Size = UDim2.new(0, 100, 0, 30)
+                                bg.StudsOffset = Vector3.new(0, 3, 0)
+                                bg.AlwaysOnTop = true
+                                
+                                local name = Instance.new("TextLabel", bg)
+                                name.Size = UDim2.new(1, 0, 1, 0)
+                                name.BackgroundTransparency = 1
+                                name.Text = p.Name
+                                name.TextColor3 = Color3.new(1, 1, 1)
+                                name.TextStrokeColor3 = Color3.new(0, 0, 0)
+                                name.TextStrokeTransparency = 0
+                                name.Font = Enum.Font.GothamBold
+                                name.TextSize = 13
+                            end
+                        end
+                        
+                        -- Бокс
                         local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-                        if root then
+                        if root and not root:FindFirstChild("XenoESP_Box") then
                             local box = Instance.new("BillboardGui", root)
                             box.Name = "XenoESP_Box"
                             box.Size = UDim2.new(4, 0, 6, 0)
@@ -780,45 +843,65 @@ RunService.RenderStepped:Connect(function(dt)
                             stroke.Color = Color3.new(1, 1, 1)
                             stroke.Thickness = 1
                         end
-                    end
-                else
-                    if c:FindFirstChild("XenoESP_Highlight") then
-                        c.XenoESP_Highlight:Destroy()
-                    end
-                    if c:FindFirstChild("XenoESP_Name") then
-                        c.XenoESP_Name:Destroy()
-                    end
-                    local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-                    if root and root:FindFirstChild("XenoESP_Box") then
-                        root.XenoESP_Box:Destroy()
+                    else
+                        -- Если игрок мертв - удаляем его ESP элементы
+                        if c:FindFirstChild("XenoESP_Highlight") then
+                            c.XenoESP_Highlight:Destroy()
+                        end
+                        if c:FindFirstChild("XenoESP_Name") then
+                            c.XenoESP_Name:Destroy()
+                        end
+                        local rootDel = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+                        if rootDel and rootDel:FindFirstChild("XenoESP_Box") then
+                            rootDel.XenoESP_Box:Destroy()
+                        end
                     end
                 end
             end
         end
+    else
+        -- ЕСЛИ ESP ВЫКЛЮЧЕН - ПОЛНОСТЬЮ ОЧИЩАЕМ ВСЁ
+        clearAllESP()
     end
     
+    -- Hitbox extender (отдельно от ESP, работает всегда при включении)
     if settings.hitbox then
         for _, p in pairs(Players:GetPlayers()) do
-            if p ~= player and p.Character and p.Character:FindFirstChild("Head") then
-                p.Character.Head.Size = Vector3.new(settings.hitboxSize, settings.hitboxSize, settings.hitboxSize)
-                p.Character.Head.Transparency = 0.5
-                p.Character.Head.CanCollide = false
+            if p ~= player and p.Character then
+                local head = p.Character:FindFirstChild("Head")
+                if head then
+                    head.Size = Vector3.new(settings.hitboxSize, settings.hitboxSize, settings.hitboxSize)
+                    head.Transparency = 0.5
+                    head.CanCollide = false
+                end
+            end
+        end
+    else
+        -- Восстанавливаем нормальный размер головы, если хитбокс выключен
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character then
+                local head = p.Character:FindFirstChild("Head")
+                if head then
+                    head.Size = Vector3.new(2, 1, 1) -- Стандартный размер головы в Roblox
+                    head.Transparency = 0
+                    head.CanCollide = true
+                end
             end
         end
     end
 end)
 
--- Хоткеи
+-- Хоткеи (оставляем без изменений)
 UIS.InputBegan:Connect(function(i, gp)
     if gp then return end
     
     if i.KeyCode == Enum.KeyCode.Q then
         if settings.fly then
             settings.fly = false
-            if flyToggle then flyToggle:Set(false) end
+            if flyToggleSlider then flyToggleSlider:Set(false, settings.flySpeed) end
         else
             settings.fly = true
-            if flyToggle then flyToggle:Set(true) end
+            if flyToggleSlider then flyToggleSlider:Set(true, settings.flySpeed) end
         end
     end
     
@@ -842,4 +925,4 @@ UIS.InputBegan:Connect(function(i, gp)
     end
 end)
 
-print("XENO DARK V17 [MinimalUI] Loaded! Все слайдеры заменены на ToggleSlider!")
+print("XENO DARK V17 [MinimalUI] Loaded! ESP fix applied!")
