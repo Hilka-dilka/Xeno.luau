@@ -1,1 +1,1140 @@
---[[ v1.0.0 https://wearedevs.net/obfuscator ]] return(function(...)local X={"\050\070\104\073\070\111\056\082\049\071\048\100\104\120\114\077\043\052\061\061";"\112\053\055\116\043\053\102\061";"\043\053\066\116\082\087\055\100\112\080\114\106\082\102\061\061";"\115\103\122\055\082\089\079\078\070\049\082\110\110\086\082\087","\043\103\086\047\108\120\081\113\121\108\116\053\055\086\070\103","\110\111\114\100\082\048\061\061","\101\053\066\109\101\087\090\081\043\080\112\061","\075\079\061\061","\112\089\104\078\115\108\088\111";"\082\089\055\086\110\079\061\061";"\082\103\120\122\082\048\061\061";"\049\109\121\103\112\048\061\061";"\076\086\066\081\043\080\104\114\050\052\061\061";"\075\054\079\114\082\113\074\081\075\079\061\061";"\043\067\098\061","\082\076\090\078\043\089\098\061";"\121\111\104\111\049\087\055\103\112\070\055\104\108\117\116\078","\110\111\049\065\048\070\116\105\108\065\105\051\110\076\112\109\055\065\100\061","\101\053\066\106\101\108\086\054\082\076\098\061";"\110\103\116\116\112\079\061\061","\112\080\120\106\082\053\066\122","\049\053\120\122\112\053\049\078\098\065\104\114\101\053\049\117\101\053\049\072\098\048\061\061","\112\080\049\122\043\089\082\114","\055\103\110\103\115\065\082\089\075\108\074\103\050\108\086\109\101\102\061\061","\043\053\049\106";"\077\087\104\100\112\065\101\114\101\052\061\061","\071\067\105\104\108\109\043\120\113\056\109\118\076\101\109\104\076\082\050\107\053\069\110\047\065\072\049\074\057\086\122\075\086\079\047\083\112\113\080\122\109\049\080\114\075\043\109\070\113\055\089\106\103\076\056\100\108\113\048\071\066\076\079\065\079\073\102\104\070\088\066\114\116\076\048\099\068\054\069\049\055\089\066\118\114\103\050\078\075\047\083\056\047\069\068\081\106\066\072\083\047\102\054\088\052\102\061\061","\070\071\049\057\077\087\082\065\048\049\104\117\075\053\049\121\070\048\061\061","\112\103\049\100\043\108\049\100\110\076\104\116\110\080\105\114","\077\065\101\070\049\071\116\070\108\053\116\119\104\087\081\070\101\048\061\061","\076\086\066\118\082\108\069\061";"\112\053\074\089\055\076\072\109\043\071\104\072\112\067\121\086","\076\086\066\111\110\102\061\061","\070\065\049\080\070\111\114\115\075\053\090\074\082\053\069\100","\110\103\066\106\110\103\120\100","";"\115\108\066\049\070\087\104\121\082\065\104\047\082\079\061\061";"\108\114\056\089\055\072\055\049\071\117\055\078\121\108\102\102\082\079\061\061","\101\053\120\054\043\053\070\061";"\082\103\086\116\101\053\055\074";"\101\108\088\102\110\108\055\057";"\043\067\065\061";"\055\049\116\116\115\071\104\114\101\100\122\082\101\120\056\070";"\043\108\120\100\115\052\061\061";"\076\086\066\122\082\076\104\116\101\053\120\054\043\053\070\061","\082\080\105\051\043\089\098\061";"\071\071\082\070\048\111\081\110\121\065\105\053\048\108\066\100\108\049\065\061"}for M,t in ipairs({{1005264-1005263,178502+-178455},{981141+-981140;571404+-571393},{-487038-(-487050);-737329+737376}})do while t[465486+-465485]<t[850620-850618]do X[t[693154-693153]],X[t[-930435-(-930437)]],t[-945566+945567],t[287174+-287172]=X[t[-955501-(-955503)]],X[t[368923-368922]],t[1015072+-1015071]+(908867+-908866),t[335077+-335075]-(-1045487+1045488)end end local function M(M)return X[M+(-905210-(-944834))]end do local M=math.floor local t={H=-246487+246523,b=935670+-935662;E=-521342-(-521398),K=-869039+869053,s=-485898+485924,n=-507310+507334;J=-754538+754578,Z=-736912+736921,U=-305783+305842;["\051"]=641719-641672;["\043"]=542035-542008;["\054"]=356772+-356738;z=-263799-(-263844);["\055"]=97267-97254;N=-902105-(-902155),Y=-741109+741164;F=-1021003-(-1021023),["\056"]=187960+-187959;t=946444+-946411;q=986497-986495,A=-976939+976943;x=21936+-21931,S=-212899-(-212910);o=-636693+636732;D=988119-988059,h=825168+-825151,l=353985+-353963,e=-827100+827129;Q=-89916-(-89957);u=-444056+444091,a=-848048-(-848110);r=163772-163735;B=927259-927198;L=1017369+-1017346;C=125726-125723;c=484192-484129;i=22540+-22491;["\048"]=1042624+-1042608,T=681097-681082,["\052"]=-840372-(-840372);M=-960947+960965;["\057"]=617269+-617226;f=-1026640-(-1026688),["\049"]=101052-101031;j=597324+-597278;G=580229+-580210;k=512172-512141,["\053"]=-851206-(-851212),V=-567273-(-567326),P=-585252+585290,O=-833614+833646;["\047"]=-779430+779488;["\050"]=-729978+730008,v=195614+-195570,I=-1011958+1011968;X=305768+-305711;d=-262117+262169;m=450963+-450912,g=-739681+739735,y=-639929-(-639941),w=-559010+559052,W=-300617-(-300624);R=974931+-974906;p=874716-874688}local l=type local Z=string.char local e=string.len local S=table.insert local A=table.concat local n=string.sub local w=X for X=751895+-751894,#w,754156+-754155 do local q=w[X]if l(q)=="\115\116\114\105\110\103"then local l=e(q)local b={}local k=-312940-(-312941)local I=-145027+145027 local H=-518007-(-518007)while k<=l do local X=n(q,k,k)local e=t[X]if e then I=I+e*(700165+-700101)^((901194-901191)-H)H=H+(244661-244660)if H==828626+-828622 then H=-198343-(-198343)local X=M(I/(489131-423595))local t=M((I%(398123-332587))/(-980180-(-980436)))local l=I%(856259-856003)S(b,Z(X,t,l))I=418073+-418073 end elseif X=="\061"then S(b,Z(M(I/(-840589+906125))))if k>=l or n(q,k+(543014+-543013),k+(-851559+851560))~="\061"then S(b,Z(M((I%(918591-853055))/(739040+-738784))))end break end k=k+(908059-908058)end w[X]=A(b)end end end return(function(X,l,Z,e,S,A,n,B,t,W,w,k,H,I,b,P,r,o,q)b,W,o,H,r,k,t,I,B,P,q,w=function()k=k+(924204+-924203)q[k]=-1002271-(-1002272)return k end,function(X,M)local l=I(M)local Z=function(Z,e,S,A)return t(X,{Z;e;S;A},M,l)end return Z end,function(X,M)local l=I(M)local Z=function(Z,e,S)return t(X,{Z;e;S},M,l)end return Z end,function(X)local M,t=-390450+390451,X[510289+-510288]while t do q[t],M=q[t]-(632411+-632410),(174862+-174861)+M if q[t]==493963-493963 then q[t],w[t]=nil,nil end t=X[M]end end,function(X)q[X]=q[X]-(-379441-(-379442))if q[X]==-951303+951303 then q[X],w[X]=nil,nil end end,-560468-(-560468),function(t,Z,e,S)local U,D,N,k,h,V,i,m,y,E,q,j,a,Q,c,I,C,P,L,v,J,n,K,z,H,T,x,F,u,d,O,G,g,f while t do if t<7149224-(-460250)then if t<5132668-806618 then if t<1428433-(-511096)then if t<-352826+1200556 then if t<892801+-273581 then if t<-514663+1116046 then if t<-55658-(-608127)then x=w[k]t=x and 448601+13993947 or 4099319-(-64399)C=x else n=5307640-453556 k=M(-434767+395171)I=-419171-(-1009571)q=k^I t=n-q n=M(46606-86207)q=t t=n/q n={t}t=X[M(789552+-829147)]end else k=w[e[-647614-(-647616)]]I=w[e[-18276-(-18279)]]q=k==I t=295020+6214355 n=q end else if t<-10274+782546 then t=-766646+4807458 w[k]=n else j=285610-285610 T=#F t=6069180-426096 V=T==j end end else if t<637593+530319 then if t<-638384+1707106 then t=X[M(876554-916143)]n={k}else t=X[M(720858+-760437)]n={}end else if t<921283-(-674884)then i=n v=M(117339-156955)m=M(413747-453368)n=X[v]v=M(-63821+24229)t=n[v]v=b()w[v]=t n=X[m]m=M(722990+-762568)t=n[m]m=t c=t K=M(-204658+165037)Q=X[K]G=Q t=Q and-825167+15444238 or-778087+4340217 else k=w[e[-911115-(-911117)]]I=-350741-(-350978)q=k*I k=238209+34863368183016 n=q+k k=-309901+309902 q=35184373106087-1017255 t=n%q w[e[-565168+565170]]=t q=w[e[-569623-(-569626)]]t=895790+11315912 n=q~=k end end end else if t<-631744+3929216 then if t<-767711+3570248 then if t<2726960-101179 then if t<-274648+2674656 then t=true t=7036996-829090 else I=w[e[41514-41508]]t=8514794-660236 k=I==q n=k end else k=M(-851220+811597)I=-190481+6600345 q=k^I n=6717767-(-952163)t=n-q n=M(400661+-440283)q=t t=n/q n={t}t=X[M(-668138-(-628530))]end else if t<2736375-(-306179)then q=M(-625415-(-585797))n=M(563930-603528)t=X[n]n=X[q]q=M(511614+-551232)X[q]=t t=16309287-391242 q=M(-646643-(-607045))X[q]=n q=w[e[-487090-(-487091)]]k=q()else H=224185-224184 P=741338-741336 k=w[e[49236-49235]]I=k(H,P)k=848652-848651 q=I==k t=q and 5658084-(-851291)or 167104-(-439606)n=q end end else if t<-333531+3969441 then if t<814401+2730104 then t=w[v]j=-526668-(-526674)E=123170+-123169 f=t(E,j)t=M(-698571+658973)X[t]=f j=M(528570+-568168)E=X[j]j=139555-139553 t=E>j t=t and 602335+13558378 or-476952+6604010 else t=c n=G t=G and 1037354+5478847 or-104419+9518875 end else if t<3215549-(-930317)then a=nil z=r(z)J=r(J)O=r(O)t=11916869-(-847567)u=r(u)g=r(g)d=r(d)else y=-1029018+1029019 w[k]=C D=w[u]N=D+y U=a[N]x=Q+U U=503244+-502988 t=x%U Q=t N=w[z]U=K+N N=-372595-(-372851)t=748463+3292349 x=U%N K=x end end end end else if t<520054+5808676 then if t<6128244-393147 then if t<4595636-(-645424)then if t<6083726-945994 then if t<714945+4239531 then d=M(108772+-148388)U=M(-1038434-(-998828))O=b()w[O]=h z=367261-367161 y=-256035-(-256035)n=X[d]d=M(-330710-(-291118))u=754326-754071 t=n[d]d=312601+-312600 n=t(d,z)d=b()w[d]=n J=931746+-931745 t=w[v]z=312867-312867 a=96396-96394 n=t(z,u)u=-693745+693746 z=b()w[z]=n t=w[v]g=w[d]n=t(u,g)u=b()w[u]=n n=w[v]g=n(J,a)a=M(50655-90260)n=-807033+807034 t=g==n n=M(-263425-(-223826))g=b()L=343422-333422 w[g]=t x=X[U]N=w[v]D={N(y,L)}t=M(544568-584171)t=V[t]U=x(l(D))x=M(-425513-(-385908))C=U..x J=a..C t=t(V,n,J)J=b()w[J]=t a=M(-108185-(-68574))C=o(874581+2281440,{v;O;c;I;k,T;g,J,d,u,z;G})n=X[a]a={n(C)}t={l(a)}a=t t=w[g]t=t and 475400+10403260 or 673252+-513021 else q=w[e[-576361+576362]]n=#q q=546884+-546884 t=n==q t=t and-419952+2237032 or 7643246-718278 end else t=x t=686315-63042 n=C end else if t<5735946-208143 then w[k]=h t=w[k]t=t and 12026723-(-87351)or 2522199-461850 else z=-511477+511478 j=#F T=-126588+126589 V=H(T,j)t=-301965+6852580 T=i(F,V)j=w[K]d=T-z V=nil O=v(d)j[T]=O T=nil end end else if t<-784799+6990221 then if t<776315+5389128 then j=M(707042-746640)t=X[j]j=M(173170+-212788)X[j]=t t=691299+8282183 else U=nil T=b()j=W(1044669+3978580,{T;G;c,P})P=r(P)V={}n={}H=nil P=M(-261388+221778)O=b()m=nil d=M(-513521+473937)g=M(-113559-(-73959))w[T]=V V=b()w[V]=j j={}F=nil w[O]=j i=nil v=nil z={}j=X[d]Q=nil J=w[O]a=M(-7190+-32425)u={[g]=J;[a]=U}d=j(z,u)H=X[P]I=d j=W(-296023+8177457,{O,T,K,G;c,V})O=r(O)G=r(G)t=X[M(360877-400494)]c=r(c)k=j v=M(667077+-706679)T=r(T)c=M(288169+-327755)i=X[v]V=r(V)K=r(K)Q=22706427427022-413569 G=k(c,Q)m=I[G]G=M(398189+-437776)G=i[G]k=nil I=nil v={G(i,m)}P=H(l(v))H=P()end else if t<5917515-(-332927)then t=o(7274101-(-534187),{H})f={t()}n={l(f)}t=X[M(-665650-(-626065))]else t=true t=t and-12726+9258469 or 6913715-705809 end end end else if t<6763312-(-56706)then if t<7087701-550642 then if t<886341+5625957 then if t<5708658-(-704407)then t=true t=t and 374658+3163672 or 158086+13012088 else t=n and 713084+13084959 or 140289+8920723 end else F=M(-907702-(-868091))Q=-555183+555248 G=b()w[G]=n c=-391707-(-391710)t=w[v]V=W(2264958-(-531711),{})E=M(311304-350910)n=t(c,Q)t=-760216+760216 c=b()Q=t t=-861819+861819 K=t w[c]=n n=X[F]F={n(V)}t={l(F)}n=-811307-(-811309)F=t t=F[n]V=t n=M(553091+-592685)t=X[n]T=w[I]f=X[E]E=f(V)f=M(867764+-907363)h=T(E,f)T={h()}n=t(l(T))T=b()w[T]=n h=w[c]t=11759629-(-1004807)f=h h=404191-404190 E=h h=-117991+117991 n=691341+-691340 j=E<h h=n-E end else if t<-770863+7336150 then j=-602031+602031 T=#F V=T==j t=V and 163235+6033343 or 6120899-477815 else I=I+P k=I<=H v=not i k=v and k v=I>=H v=i and v k=v or k v=-322880+7882294 t=k and v k=7672024-486631 t=t or k end end else if t<448132+6719434 then if t<7506982-643670 then D=628368-628367 x=t N=a[D]D=false U=N==D C=U t=U and 8520498-(-302728)or 6072472-885708 else t=X[M(168098+-207679)]I=M(-213410+173789)k=X[I]I=M(887782+-927372)q=k[I]I=w[e[605267-605266]]k={q(I)}n={l(k)}end else if t<-708685+7928486 then t=w[e[-781040-(-781050)]]k=w[e[-245126-(-245137)]]q[t]=k t=w[e[354946+-354934]]k={t(q)}n={l(k)}t=X[M(859817+-899429)]else m=325876-325876 t=w[e[946570-946569]]G=563969-563714 v=t(m,G)k=I q[k]=v k=nil t=5894781-(-699403)end end end end end else if t<12401141-216232 then if t<9201467-(-127353)then if t<-958035+9658413 then if t<7058729-(-803198)then if t<-588631+8429753 then if t<800146+6919581 then f=Q==K t=5952340-432451 h=f else t=15981994-63949 end else t=9396486-335474 w[e[539726-539721]]=n q=nil end else if t<7444944-(-564139)then q=Z[-136250+136251]t=w[e[-170935+170936]]k=Z[-277002+277004]I=t t=I[k]t=t and 17380187-984333 or 13710725-(-867265)else c=c+Q m=c<=G F=not K m=F and m F=c>=G F=K and F m=F or m F=10498979-227381 t=m and F m=576915+13755654 t=t or m end end else if t<-567709+9554468 then if t<446402+8523914 then D=-118808+118810 t=-718657+5905421 N=a[D]D=w[J]U=N==D C=U else t=17952+6311329 end else if t<8438384-(-716843)then t=w[e[540445-540438]]t=t and 10455241-(-742932)or-934850+12196839 else t=679954+5649327 end end end else if t<11384158-516153 then if t<10615320-318214 then if t<9883141-(-190844)then if t<8941343-(-447490)then i=w[P]n=i t=1084172-(-117819)else t=6301503-(-214698)c=M(-120651-(-81032))G=X[c]n=G end else m=c E=M(-402252-(-362648))f=X[E]E=M(590972-630579)h=f[E]f=h(q,m)h=w[e[-598202+598208]]E=h()t=8354904-275304 T=f+E V=T+i T=-702766+703022 m=nil F=V%T i=F T=I[k]E=-393534-(-393535)f=i+E h=H[f]V=T..h I[k]=V end else if t<169866+10324813 then I=-701651-(-701683)k=w[e[-186201+186204]]Q=-240258-(-240271)q=k%I H=w[e[-151728+151732]]v=w[e[298143+-298141]]V=w[e[-786151-(-786154)]]F=V-q G=-209999+210001 V=586960-586928 K=F/V c=Q-K m=G^c i=v/m P=H(i)H=4295468151-500855 I=P%H P=-931864-(-931866)H=P^q k=I/H m=395968-395967 H=w[e[938225-938221]]v=k%m m=4294610056-(-357240)i=v*m P=H(i)H=w[e[837256-837252]]i=H(k)Q=-737131+737387 I=P+i t=-607383+7532351 P=117109+-51573 v=-178328-(-243864)H=I%P G=905879-905623 i=I-H P=i/v v=421647+-421391 i=H%v m=H-i v=m/G H=nil G=-591493+591749 m=P%G c=P-m G=c/Q c={i;v,m,G}q=nil i=nil k=nil P=nil v=nil m=nil I=nil G=nil w[e[138303+-138302]]=c else f=w[k]h=f t=f and 6841391-(-798002)or-681032+6200921 end end else if t<-190577+11449986 then if t<11120331-(-27216)then C=w[k]n=C t=C and 95104+6768151 or 179156-(-444117)else I=615674-615674 q=M(-69945+30348)t=X[q]k=w[e[-240701+240709]]q=t(k,I)t=-11632+11273621 end else if t<-149372+12083280 then t={}I=w[e[-428778-(-428787)]]k=-44900+44901 H=I I=-818941-(-818942)q=t P=I t=6101029-(-493155)I=-508933+508933 i=P<I I=k-P else t=14902685-(-523023)end end end end else if t<13699610-(-623516)then if t<14573528-834639 then if t<12612140-(-241200)then if t<789057+11800327 then if t<422069+11866318 then t=14107944-(-879310)k=w[e[-93870+93873]]I=298516+-298504 q=k*I k=-958551+958808 n=q%k w[e[789331+-789328]]=n else T=T+O V=T<=j z=not d V=z and V z=T>=j z=d and z V=z or V z=678090+14035842 t=V and z V=-184859+1008721 t=t or V end else O=not j h=h+E n=h<=f n=O and n O=h>=f O=j and O n=O or n O=741643+3644243 t=n and O n=642299+10175885 t=t or n end else if t<12597827-(-424743)then n=M(-740982-(-701385))t=X[n]q=M(613237-652828)n=t(q)n={}t=X[M(362160+-401743)]else t=X[M(-603415-(-563802))]n={}end end else if t<-136358+14297789 then if t<935746+13124921 then H=M(930720+-970326)n=M(397307+-436901)G=W(-240937+821782,{})m=M(-64150-(-24539))t=X[n]q=w[e[244654-244650]]I=X[H]v=X[m]m={v(G)}i={l(m)}v=-941926-(-941928)P=i[v]H=I(P)I=M(-542854-(-503255))k=q(H,I)q={k()}n=t(l(q))k=w[e[-125272-(-125277)]]q=n n=k t=k and 1579470-(-873159)or 7479880-(-374678)else E=M(470397+-510003)t=X[E]O=M(205572+-245190)j=X[O]E=t(j)t=M(43218+-82816)X[t]=E t=9128319-154837 end else if t<-950681+15215112 then t=true n={}w[e[478568-478567]]=t t=X[M(815361+-854970)]else I=M(-253730+214126)t=true q=Z k=b()w[k]=t n=X[I]v=M(268479-308090)I=M(-971923-(-932303))t=n[I]I=b()w[I]=t t=o(11886111-(-1034514),{})H=b()w[H]=t P=b()m=B(13910838-(-322645),{P})t=false w[P]=t i=X[v]v=i(m)n=v t=v and 9857324-522582 or 311713-(-890278)end end end else if t<13923058-(-885606)then if t<14422141-(-182786)then if t<1028611+13532402 then if t<-501179+14881984 then t=-380592+1249008 H=nil i=nil v=nil else U=210105-210104 x=a[U]t=730252+3433466 C=x end else m=M(745312-784916)P=955050+35184371133782 t={}w[e[-354302+354304]]=t n=w[e[-952675-(-952678)]]v=258395-258140 H=n n=k%P w[e[-310546+310550]]=n i=k%v c=409435-409434 v=-275533-(-275535)P=i+v w[e[543895+-543890]]=P v=X[m]m=M(-881203-(-841615))i=v[m]m=-333876-(-333877)v=i(q)t=182323+7897277 i=M(958257-997834)Q=c I[k]=i c=-952917-(-952917)i=811183+-810986 G=v K=Q<c c=m-Q end else if t<-624208+15279444 then F=M(924636-964257)t=785804+2776326 K=X[F]F=M(-432122-(-392503))Q=K[F]G=Q else t=12315836-(-154989)V=T z=V F[V]=z V=nil end end else if t<16040620-217053 then if t<15492592-385471 then I=-833148+833149 k=w[e[-220767-(-220770)]]q=k~=I t=q and-10117+10473415 or 562219+11649483 else v=r(v)P=r(P)K=nil I=r(I)V=nil F=nil I=nil T=r(T)H=r(H)m=nil i=nil Q=nil F={}k=r(k)v=M(-676377+636761)G=r(G)G=M(-376056+336452)k=nil i=M(-845188-(-805572))c=r(c)Q={}P=X[i]i=M(1039487+-1079101)H=P[i]P=b()w[P]=H i=X[v]v=M(-931101+891509)H=i[v]t=12529532-58707 m=M(80810-120431)V=-534773+534774 v=X[m]m=M(757642-797232)i=v[m]c=b()m=X[G]G=M(-464161-(-424568))K=b()T=-733892-(-734148)v=m[G]G=b()m=-986518-(-986518)w[G]=m j=T m=601215+-601213 w[c]=m m={}w[K]=Q T=-132871-(-132872)O=T Q=39471-39471 T=905643-905643 d=O<T T=V-O end else if t<-204142+16435342 then t=true t=t and 2311781-(-498160)or 847743-(-278749)else t=-577661+1446077 end end end end end end end t=#S return l(n)end,function(X)for M=258417-258416,#X,861577-861576 do q[X[M]]=(-668769+668770)+q[X[M]]end if Z then local t=Z(true)local l=S(t)l[M(-325188+285588)],l[M(-43410-(-3830))],l[M(-1024600-(-985018))]=X,H,function()return 2435199-(-949245)end return t else return e({},{[M(-421781-(-382201))]=H,[M(-667974-(-628374))]=X;[M(-857508-(-817926))]=function()return-411745+3796189 end})end end,function(X,M)local l=I(M)local Z=function(Z)return t(X,{Z},M,l)end return Z end,function(X,M)local l=I(M)local Z=function(...)return t(X,{...},M,l)end return Z end,{},{}return(P(15187353-918450,{}))(l(n))end)(getfenv and getfenv()or _ENV,unpack or table[M(-955712+916093)],newproxy,setmetatable,getmetatable,select,{...})end)(...)
+-- ЗАГРУЗОЧНАЯ ИКОНКА (ПОЯВЛЯЕТСЯ ПЕРВОЙ)
+local player = game.Players.LocalPlayer
+local splashGui = Instance.new("ScreenGui")
+splashGui.Name = "MinimalUILoader"
+splashGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+splashGui.ResetOnSpawn = false
+splashGui.Parent = player.PlayerGui
+
+local splashContainer = Instance.new("Frame")
+splashContainer.Name = "SplashContainer"
+splashContainer.Size = UDim2.new(1, 0, 1, 0)
+splashContainer.BackgroundTransparency = 1
+splashContainer.Parent = splashGui
+
+local splashIcon = Instance.new("ImageLabel")
+splashIcon.Name = "SplashIcon"
+splashIcon.Size = UDim2.new(0, 150, 0, 150)
+splashIcon.Position = UDim2.new(0.5, -75, 0.5, -75)
+splashIcon.BackgroundTransparency = 1
+splashIcon.Image = "rbxassetid://78139268098085"
+splashIcon.ImageTransparency = 1
+splashIcon.ScaleType = Enum.ScaleType.Fit
+splashIcon.Parent = splashContainer
+
+local tweenService = game:GetService("TweenService")
+
+local fadeIn = tweenService:Create(splashIcon, 
+    TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+    {ImageTransparency = 0.3}
+)
+
+local fadeOut = tweenService:Create(splashIcon, 
+    TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), 
+    {ImageTransparency = 1}
+)
+
+fadeIn:Play()
+
+task.wait(0.8)
+task.wait(0.5)
+
+-- ========== ОСНОВНОЙ КОД ==========
+local MinimalUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI_test.lua"))()
+
+local player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local cam = workspace.CurrentCamera
+local Players = game:GetService("Players")
+local mouse = player:GetMouse()
+
+local settings = {
+    fly = false, flySpeed = 0.8,
+    walkBoost = false, walkPower = 0.5,
+    jumpBoost = false, jumpPower = 3.5,
+    noJumpCooldown = false,
+    esp = false,
+    fullbright = false,
+    noclip = false,
+    hitbox = false,
+    hitboxSize = 5,
+    freecam = false,
+    aimbot = false,
+    aimbotFov =90,
+    aimbotSmoothness = 5,
+    aimPart = "Head",
+    showFovCircle = false,
+    aimOnKey = true,
+    wallCheck = false,
+    aimKey = Enum.UserInputType.MouseButton2,
+    gravityEnabled = false,
+    gravityValue = 50,
+    teleportToMouse = false
+}
+
+------------------------------------------------------------------------
+-- Teleport to Mouse Function
+------------------------------------------------------------------------
+local function teleportToMouse()
+    local char = player.Character
+    if not char then return end
+    
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    
+    local mousePos = mouse.Hit
+    if mousePos and mousePos.Position then
+        local wasAnchored = hrp.Anchored
+        
+        if wasAnchored then
+            hrp.Anchored = false
+        end
+        
+        hrp.CFrame = CFrame.new(mousePos.Position)
+        
+        task.wait(0.05)
+        
+        if wasAnchored then
+            hrp.Anchored = true
+        end
+        
+        print("Teleported to mouse position")
+    end
+end
+
+------------------------------------------------------------------------
+-- Функция для поиска игрока по первым буквам
+------------------------------------------------------------------------
+local function findPlayerByPartialName(partialName)
+    if not partialName or partialName == "" then return nil end
+    
+    local partialLower = string.lower(partialName)
+    local bestMatch = nil
+    
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then
+            local playerNameLower = string.lower(p.Name)
+            if string.sub(playerNameLower, 1, #partialLower) == partialLower then
+                bestMatch = p.Name
+                break
+            end
+        end
+    end
+    
+    return bestMatch
+end
+
+------------------------------------------------------------------------
+-- aimbot
+------------------------------------------------------------------------
+local Drawing = Drawing or {}
+local fovCircle = Drawing.new("Circle")
+if fovCircle then
+    fovCircle.Thickness = 1
+    fovCircle.NumSides = 64
+    fovCircle.Radius = settings.aimbotFov
+    fovCircle.Filled = false
+    fovCircle.Visible = false
+    fovCircle.Color = Color3.new(1, 0, 0)
+    fovCircle.Transparency = 0.5
+end
+
+local targetDot = Drawing.new("Circle")
+if targetDot then
+    targetDot.Thickness = 2
+    targetDot.NumSides = 32
+    targetDot.Radius = 6
+    targetDot.Filled = true
+    targetDot.Color = Color3.new(1, 1, 1)
+    targetDot.Transparency = 0.3
+    targetDot.Visible = false
+end
+
+local targetDotOutline = Drawing.new("Circle")
+if targetDotOutline then
+    targetDotOutline.Thickness = 1
+    targetDotOutline.NumSides = 32
+    targetDotOutline.Radius = 8
+    targetDotOutline.Filled = false
+    targetDotOutline.Color = Color3.new(0, 0, 0)
+    targetDotOutline.Transparency = 0.5
+    targetDotOutline.Visible = false
+end
+
+local targetDotWall = Drawing.new("Circle")
+if targetDotWall then
+    targetDotWall.Thickness = 2
+    targetDotWall.NumSides = 32
+    targetDotWall.Radius = 6
+    targetDotWall.Filled = true
+    targetDotWall.Color = Color3.new(1, 0, 0)
+    targetDotWall.Transparency = 0.3
+    targetDotWall.Visible = false
+end
+
+local currentTarget = nil
+local targetPart = nil
+local lockedPart = nil
+local isAiming = false
+local targetVisible = false
+
+local function isTargetVisible(targetPos)
+    if not player.Character or not player.Character:FindFirstChild("Head") then return false end
+    
+    local origin = cam.CFrame.Position
+    local direction = (targetPos - origin).Unit
+    local ray = Ray.new(origin, direction * 1000)
+    local hit, position = workspace:FindPartOnRayWithIgnoreList(ray, {player.Character})
+    
+    if hit then
+        if targetPart and (hit:IsDescendantOf(targetPart.Parent) or hit == targetPart) then
+            return true
+        end
+        return false
+    end
+    return true
+end
+
+local function getClosestTarget()
+    if not settings.aimbot then return nil, nil end
+    
+    local center = Vector2.new(mouse.X, mouse.Y + 60)
+    local closestDist = settings.aimbotFov
+    local closestPlayer = nil
+    local closestPart = nil
+    local bestScore = math.huge
+    
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local char = p.Character
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            
+            if humanoid and humanoid.Health > 0 then
+                local parts = {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso", "Torso"}
+                for _, partName in pairs(parts) do
+                    local part = char:FindFirstChild(partName)
+                    if part then
+                        local pos, onScreen = cam:WorldToViewportPoint(part.Position)
+                        if onScreen then
+                            local aimDist = (Vector2.new(pos.X, pos.Y) - center).Magnitude
+                            
+                            local playerDist = 0
+                            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                                local myPos = player.Character.HumanoidRootPart.Position
+                                playerDist = (part.Position - myPos).Magnitude
+                            end
+                            
+                            local visible = true
+                            if settings.wallCheck then
+                                visible = isTargetVisible(part.Position)
+                            end
+
+                            if not (settings.wallCheck and not visible) then
+                                local score = (aimDist * 0.7) + (playerDist * 0.3)
+
+                                if aimDist < closestDist and score < bestScore then
+                                    bestScore = score
+                                    closestPlayer = p
+                                    closestPart = part
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    return closestPlayer, closestPart
+end
+
+local function smoothAim(targetPos, smoothness)
+    local currentLook = cam.CFrame.LookVector
+    local targetLook = (targetPos - cam.CFrame.Position).Unit
+    
+    local smoothFactor = math.min(1, smoothness * 0.1)
+    local newLook = currentLook:Lerp(targetLook, smoothFactor)
+    
+    local newCF = CFrame.lookAt(cam.CFrame.Position, cam.CFrame.Position + newLook)
+    cam.CFrame = newCF
+end
+
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if settings.aimbot and currentTarget and targetPart then
+            if settings.wallCheck then
+                if targetVisible then
+                    lockedPart = targetPart
+                    isAiming = true
+                end
+            else
+                lockedPart = targetPart
+                isAiming = true
+            end
+        end
+    end
+end)
+
+UIS.InputEnded:Connect(function(input, gp)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isAiming = false
+        lockedPart = nil
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if settings.showFovCircle and settings.aimbot and fovCircle then
+        fovCircle.Position = Vector2.new(mouse.X, mouse.Y + 60)
+        fovCircle.Radius = settings.aimbotFov
+        fovCircle.Visible = true
+    elseif fovCircle then
+        fovCircle.Visible = false
+    end
+    
+    if not isAiming then
+        local target, part = getClosestTarget()
+        currentTarget = target
+        targetPart = part
+        
+        if targetPart and settings.wallCheck then
+            targetVisible = isTargetVisible(targetPart.Position)
+        else
+            targetVisible = true
+        end
+    else
+        if lockedPart and settings.wallCheck then
+            targetVisible = isTargetVisible(lockedPart.Position)
+        end
+    end
+    
+    local showPart = isAiming and lockedPart or targetPart
+    if settings.aimbot and showPart and settings.showFovCircle then
+        local pos, onScreen = cam:WorldToViewportPoint(showPart.Position)
+        if onScreen then
+            local dotPos = Vector2.new(pos.X, pos.Y)
+            
+            if settings.wallCheck and not targetVisible then
+                if targetDot then targetDot.Visible = false end
+                if targetDotOutline then targetDotOutline.Visible = false end
+                if targetDotWall then
+                    targetDotWall.Position = dotPos
+                    targetDotWall.Visible = true
+                end
+            else
+                if targetDot then
+                    targetDot.Position = dotPos
+                    targetDot.Visible = true
+                end
+                if targetDotOutline then
+                    targetDotOutline.Position = dotPos
+                    targetDotOutline.Visible = true
+                end
+                if targetDotWall then targetDotWall.Visible = false end
+            end
+        else
+            if targetDot then targetDot.Visible = false end
+            if targetDotOutline then targetDotOutline.Visible = false end
+            if targetDotWall then targetDotWall.Visible = false end
+        end
+    else
+        if targetDot then targetDot.Visible = false end
+        if targetDotOutline then targetDotOutline.Visible = false end
+        if targetDotWall then targetDotWall.Visible = false end
+    end
+    
+    if settings.aimbot then
+        local shouldAim = false
+        
+        if settings.aimOnKey then
+            if settings.aimKey == Enum.UserInputType.MouseButton2 then
+                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+            elseif settings.aimKey == Enum.UserInputType.MouseButton1 then
+                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
+            elseif settings.aimKey == Enum.KeyCode.LeftAlt then
+                shouldAim = UIS:IsKeyDown(Enum.KeyCode.LeftAlt)
+            else
+                shouldAim = UIS:IsKeyDown(settings.aimKey)
+            end
+        else
+            shouldAim = true
+        end
+        
+        if shouldAim and (targetPart or lockedPart) then
+            local aimAt = lockedPart or targetPart
+            
+            local canAim = true
+            if settings.wallCheck and lockedPart then
+                canAim = isTargetVisible(aimAt.Position)
+            end
+            
+            if canAim and aimAt then
+                local smoothness = 11 - settings.aimbotSmoothness
+                smoothAim(aimAt.Position, smoothness)
+            end
+        elseif not shouldAim then
+            isAiming = false
+            lockedPart = nil
+        end
+    end
+end)
+
+
+------------------------------------------------------------------------
+-- FREECAM
+------------------------------------------------------------------------
+local pi, rad, clamp, exp = math.pi, math.rad, math.clamp, math.exp
+local NAV_GAIN = Vector3.new(1, 1, 1)*64
+local PAN_GAIN = Vector2.new(0.2, 0.2)*0.8
+local FOV_GAIN = 300
+local PITCH_LIMIT = rad(90)
+
+local Spring = {}
+Spring.__index = Spring
+function Spring.new(freq, pos) 
+    return setmetatable({f = freq, p = pos, v = pos*0}, Spring) 
+end
+
+function Spring:Update(dt, goal)
+    local f = self.f*2*pi
+    local offset = goal - self.p
+    local decay = exp(-f*dt)
+    local p1 = goal + (self.v*dt - offset*(f*dt + 1))*decay
+    local v1 = (f*dt*(offset*f - self.v) + self.v)*decay
+    self.p, self.v = p1, v1
+    return p1
+end
+
+function Spring:Reset(pos) 
+    self.p = pos
+    self.v = pos*0 
+end
+
+local cameraPos, cameraRot, cameraFov = Vector3.new(), Vector2.new(), 70
+local velSpring, panSpring, fovSpring = Spring.new(1.5, Vector3.new()), Spring.new(1.0, Vector2.new()), Spring.new(4.0, 0)
+local InputMap = {keys = {W=0,A=0,S=0,D=0,E=0,Q=0}, mouse = {Delta = Vector2.new(), Wheel = 0}}
+local freecamActive = false
+local rightMousePressed = false
+local lastMousePos = nil
+
+local function StepFreecam(dt)
+    if not freecamActive then 
+        return 
+    end
+    
+    local moveZ = InputMap.keys.W - InputMap.keys.S 
+    local moveX = InputMap.keys.D - InputMap.keys.A
+    local moveY = InputMap.keys.E - InputMap.keys.Q
+    
+    local speedMult = (UIS:IsKeyDown(Enum.KeyCode.LeftShift) and 0.25 or 1)
+    local vel = velSpring:Update(dt, Vector3.new(moveX, moveY, moveZ) * speedMult)
+
+    local fov = fovSpring:Update(dt, InputMap.mouse.Wheel)
+    InputMap.mouse.Wheel = 0
+    cameraFov = clamp(cameraFov + fov*FOV_GAIN*dt, 1, 120)
+
+    if rightMousePressed then
+        local pan = panSpring:Update(dt, InputMap.mouse.Delta)
+        InputMap.mouse.Delta = Vector2.new()
+        cameraRot = cameraRot + pan*PAN_GAIN*dt
+        cameraRot = Vector2.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y%(2*pi))
+    end
+
+    local moveVector = Vector3.new()
+    if vel.X ~= 0 or vel.Y ~= 0 or vel.Z ~= 0 then
+        local camCF = CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)
+
+        moveVector = moveVector + camCF.LookVector * vel.Z      
+        moveVector = moveVector + camCF.RightVector * vel.X     
+        moveVector = moveVector + camCF.UpVector * vel.Y        
+    end
+    
+    cameraPos = cameraPos + moveVector * NAV_GAIN * dt
+
+    local cf = CFrame.new(cameraPos) * CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)
+    cam.CFrame = cf
+    cam.Focus = cf
+    cam.FieldOfView = cameraFov
+end
+
+local function ToggleFreecam(state)
+    if state then
+        local cf = cam.CFrame
+        cameraRot = Vector2.new(cf:toEulerAnglesYXZ())
+        cameraPos = cf.p
+        cameraFov = cam.FieldOfView
+        velSpring:Reset(Vector3.new())
+        panSpring:Reset(Vector2.new())
+        fovSpring:Reset(0)
+
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.Anchored = true
+        end
+        
+        RunService:BindToRenderStep("Freecam", 201, StepFreecam)
+        freecamActive = true
+        UIS.MouseBehavior = Enum.MouseBehavior.Default
+    else
+        RunService:UnbindFromRenderStep("Freecam")
+
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.Anchored = false
+        end
+        
+        cam.CameraType = Enum.CameraType.Custom
+        freecamActive = false
+        rightMousePressed = false
+        UIS.MouseBehavior = Enum.MouseBehavior.Default
+    end
+end
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and settings.freecam and freecamActive then
+        if input.UserInputType == Enum.UserInputType.MouseButton2 then
+            rightMousePressed = true
+            UIS.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition
+        end
+    end
+end)
+
+UIS.InputEnded:Connect(function(input, gameProcessed)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        if settings.freecam and freecamActive then
+            rightMousePressed = false
+            UIS.MouseBehavior = Enum.MouseBehavior.Default
+        end
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if settings.freecam and freecamActive and rightMousePressed then
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            InputMap.mouse.Delta = Vector2.new(-input.Delta.y, -input.Delta.x)
+        end
+        if input.UserInputType == Enum.UserInputType.MouseWheel then
+            InputMap.mouse.Wheel = -input.Position.z
+        end
+    end
+end)
+
+
+UIS.InputBegan:Connect(function(i)
+    if i.KeyCode and i.KeyCode.Name:len() == 1 and settings.freecam and freecamActive then
+        InputMap.keys[i.KeyCode.Name] = 1
+    end
+end)
+
+UIS.InputEnded:Connect(function(i)
+    if i.KeyCode and i.KeyCode.Name:len() == 1 and settings.freecam and freecamActive then
+        InputMap.keys[i.KeyCode.Name] = 0
+    end
+end)
+
+
+------------------------------------------------------------------------
+-- FLY
+------------------------------------------------------------------------
+local flyActive = false
+
+local function ToggleFly(state)
+    flyActive = state
+    settings.fly = state
+    
+    if not state then
+        local char = player.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            local hrp = char.HumanoidRootPart
+            hrp.Velocity = Vector3.zero
+        end
+    end
+end
+
+------------------------------------------------------------------------
+-- NOCLIP
+------------------------------------------------------------------------
+local noclipConnection = nil
+local noclipActive = false
+
+local function enableNoclip()
+    if noclipActive then return end
+    noclipActive = true
+    
+    if noclipConnection then noclipConnection:Disconnect() end
+    noclipConnection = RunService.Stepped:Connect(function()
+        if settings.noclip and player.Character then
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+
+local function disableNoclip()
+    noclipActive = false
+    
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    
+    if player.Character then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+    end
+end
+
+local function toggleNoclip(state)
+    settings.noclip = state
+    if state then
+        enableNoclip()
+    else
+        disableNoclip()
+    end
+end
+
+
+------------------------------------------------------------------------
+-- UI
+------------------------------------------------------------------------
+
+local Window = MinimalUI:CreateWindow("XENO DARK V17")
+Window:SetTheme(Color3.fromRGB(0, 60, 150))
+Window:SetMenuTheme("dark")
+
+local flyToggleSlider = nil
+local walkToggleSlider = nil
+local jumpToggleSlider = nil
+local hitboxToggleSlider = nil
+local freecamToggle = nil
+local teleportToMouseToggle = nil
+
+
+local CombatTab = Window:CreateTab("⚔ COMBAT")
+
+
+local MovementSec = CombatTab:CreateSection("🏃 MOVEMENT")
+
+flyToggleSlider = MovementSec:CreateToggleSlider("Fly (Q)", 0.1, 5, 0.8, false, function(enabled, value)
+    settings.fly = enabled
+    settings.flySpeed = value
+    ToggleFly(enabled)
+    print("Fly toggled via UI:", enabled, "Speed:", value)
+end)
+
+walkToggleSlider = MovementSec:CreateToggleSlider("Walk Boost", 0.1, 3, 0.5, false, function(enabled, value)
+    settings.walkBoost = enabled
+    settings.walkPower = value
+end)
+
+jumpToggleSlider = MovementSec:CreateToggleSlider("Jump Boost", 1, 15, 3.5, false, function(enabled, value)
+    settings.jumpBoost = enabled
+    settings.jumpPower = value
+end)
+
+MovementSec:CreateToggle("No Jump Cooldown", false, function(v)
+    settings.noJumpCooldown = v
+end)
+
+local VisualSec = CombatTab:CreateSection("👁 VISUAL")
+
+
+VisualSec:CreateToggle("ESP Full", false, function(v)
+    settings.esp = v
+end)
+
+VisualSec:CreateToggle("FullBright", false, function(v)
+    settings.fullbright = v
+end)
+
+VisualSec:CreateToggle("NoClip", false, function(v)
+    toggleNoclip(v)
+end)
+
+hitboxToggleSlider = VisualSec:CreateToggleSlider("Hitbox Extender", 1, 20, 5, false, function(enabled, value)
+    settings.hitbox = enabled
+    settings.hitboxSize = value
+end)
+
+freecamToggle = VisualSec:CreateToggle("Freecam (Shift+P)", false, function(v)
+    settings.freecam = v
+    ToggleFreecam(settings.freecam)
+end)
+
+local AimbotSec = CombatTab:CreateSection("🎯 AIMBOT")
+
+
+AimbotSec:CreateToggle("Enable Aimbot", false, function(v)
+    settings.aimbot = v
+end)
+
+AimbotSec:CreateSlider("Aimbot FOV", 10, 360, 90, function(v)
+    settings.aimbotFov = v
+    if fovCircle then
+        fovCircle.Radius = v
+    end
+end)
+
+AimbotSec:CreateSlider("Smoothness", 1, 10, 5, function(v)
+    settings.aimbotSmoothness = v
+end)
+
+AimbotSec:CreateToggle("Show FOV Circle", false, function(v)
+    settings.showFovCircle = v
+end)
+
+AimbotSec:CreateToggle("Aim on Key (RMB)", true, function(v)
+    settings.aimOnKey = v
+end)
+
+AimbotSec:CreateToggle("Wall Check", false, function(v)
+    settings.wallCheck = v
+end)
+
+------------------------------------------------------------------------
+-- Other
+------------------------------------------------------------------------
+local OtherTab = Window:CreateTab("🛠 OTHER")
+
+------------------------------------------------------------------------
+-- View Section (Spectate)
+------------------------------------------------------------------------
+local ViewSec = OtherTab:CreateSection("👁 VIEW")
+
+local selectedViewPlayer = nil
+local isSpectating = false
+local viewPlayerDropdown = nil
+local viewTextBoxApi = nil
+
+local function getViewPlayersList()
+    local playersList = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then
+            table.insert(playersList, p.Name)
+        end
+    end
+    if #playersList == 0 then
+        table.insert(playersList, "No players")
+    end
+    return playersList
+end
+
+local function refreshViewDropdown()
+    if not viewPlayerDropdown then 
+        return 
+    end
+    local newList = getViewPlayersList()
+    viewPlayerDropdown:SetOptions(newList)
+    if #newList > 0 and newList[1] ~= "No players" then
+        viewPlayerDropdown:SetValue(newList[1])
+        selectedViewPlayer = newList[1]
+        if viewTextBoxApi then
+            viewTextBoxApi:Set(selectedViewPlayer)
+        end
+    else
+        viewPlayerDropdown:SetValue("No players")
+        selectedViewPlayer = nil
+        if viewTextBoxApi then
+            viewTextBoxApi:Set("")
+        end
+    end
+end
+
+local function startSpectating()
+    if selectedViewPlayer and selectedViewPlayer ~= "No players" and selectedViewPlayer ~= "Select..." then
+        local target = Players:FindFirstChild(selectedViewPlayer)
+        if target and target.Character then
+            workspace.CurrentCamera.CameraSubject = target.Character
+            isSpectating = true
+            print("Now spectating: " .. selectedViewPlayer)
+        end
+    end
+end
+
+local function stopSpectating()
+    local char = player.Character
+    if char then
+        workspace.CurrentCamera.CameraSubject = char
+        isSpectating = false
+    end
+end
+
+viewTextBoxApi = ViewSec:CreateTextBox("Enter player name:", "Type first letters...", function(inputText)
+    if inputText and inputText ~= "" then
+        local matchedPlayer = findPlayerByPartialName(inputText)
+        if matchedPlayer then
+            viewTextBoxApi:Set(matchedPlayer)
+            selectedViewPlayer = matchedPlayer
+            if viewPlayerDropdown then
+                viewPlayerDropdown:SetValue(selectedViewPlayer)
+            end
+        end
+    end
+end)
+
+viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList(), "Select...", function(selected)
+    selectedViewPlayer = selected
+    if viewTextBoxApi then
+        viewTextBoxApi:Set(selected)
+    end
+    if isSpectating then
+        startSpectating()
+    end
+end)
+
+ViewSec:CreateButton("🔄 Refresh Players", function()
+    refreshViewDropdown()
+end)
+
+ViewSec:CreateToggle("👁 Spectate Mode", false, function(v)
+    if v then
+        startSpectating()
+    else
+        stopSpectating()
+    end
+end)
+
+------------------------------------------------------------------------
+-- Teleport Section
+------------------------------------------------------------------------
+local TeleportSec = OtherTab:CreateSection("📍 TELEPORT")
+
+local selectedPlayer = nil
+local playerDropdown = nil
+local teleportTextBoxApi = nil
+
+local function safeTeleport(targetCFrame)
+    local char = player.Character
+    if not char then return end
+    
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    
+    local wasAnchored = hrp.Anchored
+    
+    if wasAnchored then
+        hrp.Anchored = false
+    end
+    
+    hrp.CFrame = targetCFrame
+    
+    task.wait(0.05)
+    
+    if wasAnchored then
+        hrp.Anchored = true
+    end
+end
+
+local function getPlayersList()
+    local playersList = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then
+            table.insert(playersList, p.Name)
+        end
+    end
+    if #playersList == 0 then
+        table.insert(playersList, "No players")
+    end
+    return playersList
+end
+
+local function refreshPlayerDropdown()
+    if not playerDropdown then return end
+    local newList = getPlayersList()
+    playerDropdown:SetOptions(newList)
+end
+
+teleportTextBoxApi = TeleportSec:CreateTextBox("Enter player name:", "Type first letters...", function(inputText)
+    if inputText and inputText ~= "" then
+        local matchedPlayer = findPlayerByPartialName(inputText)
+        if matchedPlayer then
+            teleportTextBoxApi:Set(matchedPlayer)
+            selectedPlayer = matchedPlayer
+            if playerDropdown then
+                playerDropdown:SetValue(selectedPlayer)
+            end
+        end
+    end
+end)
+
+playerDropdown = TeleportSec:CreateDropdown("Select Player", getPlayersList(), "Select...", function(selected)
+    selectedPlayer = selected
+    if teleportTextBoxApi then
+        teleportTextBoxApi:Set(selected)
+    end
+end)
+
+TeleportSec:CreateButton("📌 Teleport to Selected", function()
+    if selectedPlayer and selectedPlayer ~= "No players" and selectedPlayer ~= "Select..." then
+        local target = Players:FindFirstChild(selectedPlayer)
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            safeTeleport(target.Character.HumanoidRootPart.CFrame)
+        end
+    end
+end)
+
+TeleportSec:CreateButton("🎥 Teleport to Camera", function()
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        safeTeleport(cam.CFrame)
+    end
+end)
+
+TeleportSec:CreateButton("🔄 Refresh List", function()
+    refreshPlayerDropdown()
+end)
+
+teleportToMouseToggle = TeleportSec:CreateToggle("🎯 Teleport to Mouse (Ctrl+LMB)", false, function(v)
+    settings.teleportToMouse = v
+end)
+
+-- Gravity
+local GravitySec = OtherTab:CreateSection("🌍 GRAVITY")
+
+GravitySec:CreateToggleSlider("Gravity Control", 0, 196.2, 50, false, function(enabled, value)
+    settings.gravityEnabled = enabled
+    settings.gravityValue = value
+    
+    if enabled then
+        workspace.Gravity = value
+    else
+        workspace.Gravity = 196.2
+    end
+end)
+
+-- info
+local InfoTab = Window:CreateTab("ℹ INFO")
+local InfoSec = InfoTab:CreateSection("ABOUT")
+InfoSec:CreateButton("XENO DARK V17", function()
+    print("XENO DARK V17 - Ultimate Cheat Hub")
+end)
+InfoSec:CreateButton("Credits: Xeno Team", function() end)
+InfoSec:CreateButton("Version: 17.0", function() end)
+
+Window:SetKey(Enum.KeyCode.RightControl)
+
+
+------------------------------------------------------------------------
+-- esp
+------------------------------------------------------------------------
+local lastESPUpdate = 0
+
+local function clearAllESP()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local c = p.Character
+
+            if c:FindFirstChild("XenoESP_Highlight") then
+                c.XenoESP_Highlight:Destroy()
+            end
+
+            if c:FindFirstChild("XenoESP_Name") then
+                c.XenoESP_Name:Destroy()
+            end
+
+            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+            if root and root:FindFirstChild("XenoESP_Box") then
+                root.XenoESP_Box:Destroy()
+            end
+        end
+    end
+end
+
+RunService.RenderStepped:Connect(function(dt)
+    local char = player.Character
+    if not char then return end
+    
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    
+    if hrp and hum and not settings.freecam then
+        if settings.noJumpCooldown and UIS:IsKeyDown(Enum.KeyCode.Space) then
+            hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+            hum.Jump = true
+        end
+        
+        if flyActive then
+            hrp.Velocity = Vector3.zero
+            local move = Vector3.zero
+            if UIS:IsKeyDown(Enum.KeyCode.W) then move = move + cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
+            
+            if move.Magnitude > 0 then
+                hrp.CFrame = hrp.CFrame + move.Unit * settings.flySpeed
+            end
+        end
+        
+        if settings.walkBoost and hum.MoveDirection.Magnitude > 0 then
+            hrp.CFrame = hrp.CFrame + hum.MoveDirection * settings.walkPower
+        end
+    end
+    
+    if settings.fullbright then
+        Lighting.Brightness = 2
+        Lighting.ClockTime = 14
+        Lighting.GlobalShadows = false
+    else
+        Lighting.Brightness = 1
+        Lighting.GlobalShadows = true
+    end
+
+    if settings.esp then
+        if tick() - lastESPUpdate > 0.3 then
+            lastESPUpdate = tick()
+            
+            for _, p in pairs(Players:GetPlayers()) do
+                if p ~= player and p.Character then
+                    local c = p.Character
+                    local humTarget = c:FindFirstChildOfClass("Humanoid")
+
+                    if humTarget and humTarget.Health > 0 then
+                        if not c:FindFirstChild("XenoESP_Highlight") then
+                            local h = Instance.new("Highlight", c)
+                            h.Name = "XenoESP_Highlight"
+                            h.FillColor = Color3.fromRGB(0, 60, 150)
+                            h.FillTransparency = 0.5
+                            h.OutlineColor = Color3.new(1, 1, 1)
+                            h.OutlineTransparency = 0
+                        end
+
+                        if not c:FindFirstChild("XenoESP_Name") then
+                            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+                            if root then
+                                local bg = Instance.new("BillboardGui", c)
+                                bg.Name = "XenoESP_Name"
+                                bg.Size = UDim2.new(0, 100, 0, 30)
+                                bg.StudsOffset = Vector3.new(0, 3, 0)
+                                bg.AlwaysOnTop = true
+                                
+                                local name = Instance.new("TextLabel", bg)
+                                name.Size = UDim2.new(1, 0, 1, 0)
+                                name.BackgroundTransparency = 1
+                                name.Text = p.Name
+                                name.TextColor3 = Color3.new(1, 1, 1)
+                                name.TextStrokeColor3 = Color3.new(0, 0, 0)
+                                name.TextStrokeTransparency = 0
+                                name.Font = Enum.Font.GothamBold
+                                name.TextSize = 13
+                            end
+                        end
+
+                        local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+                        if root and not root:FindFirstChild("XenoESP_Box") then
+                            local box = Instance.new("BillboardGui", root)
+                            box.Name = "XenoESP_Box"
+                            box.Size = UDim2.new(4, 0, 6, 0)
+                            box.AlwaysOnTop = true
+                            
+                            local frame = Instance.new("Frame", box)
+                            frame.Size = UDim2.new(1, 0, 1, 0)
+                            frame.BackgroundTransparency = 1
+                            
+                            local stroke = Instance.new("UIStroke", frame)
+                            stroke.Color = Color3.new(1, 1, 1)
+                            stroke.Thickness = 1
+                        end
+                    else
+                        if c:FindFirstChild("XenoESP_Highlight") then
+                            c.XenoESP_Highlight:Destroy()
+                        end
+                        if c:FindFirstChild("XenoESP_Name") then
+                            c.XenoESP_Name:Destroy()
+                        end
+                        local rootDel = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+                        if rootDel and rootDel:FindFirstChild("XenoESP_Box") then
+                            rootDel.XenoESP_Box:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    else
+        clearAllESP()
+    end
+    
+    if settings.hitbox then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character then
+                local head = p.Character:FindFirstChild("Head")
+                if head then
+                    head.Size = Vector3.new(settings.hitboxSize, settings.hitboxSize, settings.hitboxSize)
+                    head.Transparency = 0.5
+                    head.CanCollide = false
+                end
+            end
+        end
+    else
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character then
+                local head = p.Character:FindFirstChild("Head")
+                if head then
+                    head.Size = Vector3.new(2, 1, 1) 
+                    head.Transparency = 0
+                    head.CanCollide = true
+                end
+            end
+        end
+    end
+end)
+
+-- ГЛАВНЫЙ ОБРАБОТЧИК КЛАВИШ
+UIS.InputBegan:Connect(function(i, gp)
+    if gp then return end
+    
+    if i.KeyCode == Enum.KeyCode.Q then
+        if settings.fly then
+            settings.fly = false
+            ToggleFly(false)
+            if flyToggleSlider then 
+                flyToggleSlider:SetEnabled(false)
+            end
+        else
+            settings.fly = true
+            ToggleFly(true)
+            if flyToggleSlider then 
+                flyToggleSlider:SetEnabled(true)
+            end
+        end
+    end
+    
+    if i.KeyCode == Enum.KeyCode.P and UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
+        if settings.freecam then
+            settings.freecam = false
+            ToggleFreecam(false)
+            if freecamToggle then freecamToggle:Set(false) end
+        else
+            settings.freecam = true
+            ToggleFreecam(true)
+            if freecamToggle then freecamToggle:Set(true) end
+        end
+    end
+    
+    if i.KeyCode == Enum.KeyCode.Space and settings.jumpBoost and player.Character then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.CFrame = hrp.CFrame + Vector3.new(0, settings.jumpPower, 0)
+        end
+    end
+    
+    if settings.teleportToMouse and i.UserInputType == Enum.UserInputType.MouseButton1 and UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
+        teleportToMouse()
+    end
+end)
+
+player.CameraMaxZoomDistance = 1000
+
+
+fadeOut:Play()
+task.wait(0.6)
+splashGui:Destroy()
+
+print("XENO DARK V17 [MinimalUI] Loaded!")
