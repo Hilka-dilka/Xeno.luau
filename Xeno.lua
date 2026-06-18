@@ -177,19 +177,31 @@ local isAiming = false
 local targetVisible = false
 
 local function isTargetVisible(targetPos)
-    if not player.Character or not player.Character:FindFirstChild("Head") then return false end
+    if not player.Character or not player.Character:FindFirstChild("Head") then 
+        return false 
+    end
     
     local origin = cam.CFrame.Position
     local direction = (targetPos - origin).Unit
-    local ray = Ray.new(origin, direction * 1000)
-    local hit, position = workspace:FindPartOnRayWithIgnoreList(ray, {player.Character})
+    local distance = (targetPos - origin).Magnitude
     
-    if hit then
-        if targetPart and (hit:IsDescendantOf(targetPart.Parent) or hit == targetPart) then
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    raycastParams.FilterDescendantsInstances = {player.Character}
+    
+    local raycastResult = workspace:Raycast(origin, direction * distance, raycastParams)
+    
+    if raycastResult then
+        local hit = raycastResult.Instance
+        if targetPart and hit:IsDescendantOf(targetPart.Parent) then
+            return true
+        end
+        if hit.Transparency and hit.Transparency > 0.8 then
             return true
         end
         return false
     end
+    
     return true
 end
 
@@ -208,8 +220,8 @@ local function getClosestTarget()
             local humanoid = char:FindFirstChildOfClass("Humanoid")
             
             if humanoid and humanoid.Health > 0 then
-                local parts = {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso", "Torso"}
-                for _, partName in pairs(parts) do
+                local partsToCheck = {"Head", "UpperTorso", "LowerTorso", "Torso"}
+                for _, partName in pairs(partsToCheck) do
                     local part = char:FindFirstChild(partName)
                     if part then
                         local pos, onScreen = cam:WorldToViewportPoint(part.Position)
@@ -227,7 +239,7 @@ local function getClosestTarget()
                                 visible = isTargetVisible(part.Position)
                             end
 
-                            if not (settings.wallCheck and not visible) then
+                            if not settings.wallCheck or visible then
                                 local score = (aimDist * 0.7) + (playerDist * 0.3)
 
                                 if aimDist < closestDist and score < bestScore then
@@ -247,6 +259,8 @@ local function getClosestTarget()
 end
 
 local function smoothAim(targetPos, smoothness)
+    if not targetPos then return end
+    
     local currentLook = cam.CFrame.LookVector
     local targetLook = (targetPos - cam.CFrame.Position).Unit
     
@@ -296,14 +310,20 @@ RunService.RenderStepped:Connect(function()
         currentTarget = target
         targetPart = part
         
-        if targetPart and settings.wallCheck then
-            targetVisible = isTargetVisible(targetPart.Position)
-        else
-            targetVisible = true
+        if targetPart then
+            if settings.wallCheck then
+                targetVisible = isTargetVisible(targetPart.Position)
+            else
+                targetVisible = true
+            end
         end
     else
-        if lockedPart and settings.wallCheck then
-            targetVisible = isTargetVisible(lockedPart.Position)
+        if lockedPart then
+            if settings.wallCheck then
+                targetVisible = isTargetVisible(lockedPart.Position)
+            else
+                targetVisible = true
+            end
         end
     end
     
@@ -359,17 +379,19 @@ RunService.RenderStepped:Connect(function()
             shouldAim = true
         end
         
-        if shouldAim and (targetPart or lockedPart) then
+        if shouldAim then
             local aimAt = lockedPart or targetPart
             
-            local canAim = true
-            if settings.wallCheck and lockedPart then
-                canAim = isTargetVisible(aimAt.Position)
-            end
-            
-            if canAim and aimAt then
-                local smoothness = 11 - settings.aimbotSmoothness
-                smoothAim(aimAt.Position, smoothness)
+            if aimAt then
+                local canAim = true
+                if settings.wallCheck then
+                    canAim = isTargetVisible(aimAt.Position)
+                end
+                
+                if canAim and aimAt and aimAt.Parent then
+                    local smoothness = 11 - settings.aimbotSmoothness
+                    smoothAim(aimAt.Position, smoothness)
+                end
             end
         elseif not shouldAim then
             isAiming = false
@@ -605,7 +627,7 @@ local freecamToggle = nil
 local teleportToMouseToggle = nil
 
 
-local CombatTab = Window:CreateTab("⚔ COMBAT")
+local CombatTab = Window:CreateTab("😎 MAIN")
 
 
 local MovementSec = CombatTab:CreateSection("🏃 MOVEMENT")
@@ -677,7 +699,7 @@ AimbotSec:CreateToggle("Show FOV Circle", false, function(v)
     settings.showFovCircle = v
 end)
 
-AimbotSec:CreateToggle("Aim on Key (RMB)", true, function(v)
+AimbotSec:CreateToggle("Aim on Key (RMB)", false, function(v)
     settings.aimOnKey = v
 end)
 
@@ -771,11 +793,11 @@ viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList
     end
 end)
 
-ViewSec:CreateButton("🔄 Refresh Players", function()
+ViewSec:CreateButton("Refresh Players", function()
     refreshViewDropdown()
 end)
 
-ViewSec:CreateToggle("👁 Spectate Mode", false, function(v)
+ViewSec:CreateToggle("Spectate Mode", false, function(v)
     if v then
         startSpectating()
     else
@@ -851,7 +873,7 @@ playerDropdown = TeleportSec:CreateDropdown("Select Player", getPlayersList(), "
     end
 end)
 
-TeleportSec:CreateButton("📌 Teleport to Selected", function()
+TeleportSec:CreateButton("Teleport to Selected", function()
     if selectedPlayer and selectedPlayer ~= "No players" and selectedPlayer ~= "Select..." then
         local target = Players:FindFirstChild(selectedPlayer)
         if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
@@ -860,7 +882,7 @@ TeleportSec:CreateButton("📌 Teleport to Selected", function()
     end
 end)
 
-TeleportSec:CreateButton("🎥 Teleport to Camera", function()
+TeleportSec:CreateButton("Teleport to Camera", function()
     local char = player.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
         safeTeleport(cam.CFrame)
@@ -878,7 +900,7 @@ end)
 
 local GravitySec = OtherTab:CreateSection("🌍 GRAVITY")
 
-GravitySec:CreateToggleSlider("Gravity Control", 0, 196.2, 50, false, function(enabled, value)
+GravitySec:CreateToggleSlider("Gravity Control", 0, 500, 196.2, false, function(enabled, value)
     settings.gravityEnabled = enabled
     settings.gravityValue = value
     
@@ -1108,5 +1130,9 @@ UIS.InputBegan:Connect(function(i, gp)
 end)
 
 player.CameraMaxZoomDistance = 1000
+
+fadeOut:Play()
+task.wait(0.6)
+splashGui:Destroy()
 
 print("XENO DARK V17 by: Hilka-dilka(github) [MinimalUI]")
