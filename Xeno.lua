@@ -802,17 +802,13 @@ end)
 jumpToggleSlider = MovementSec:CreateToggleSlider("Jump Boost", 1, 15, 3.5, false, function(e, v)
     settings.jumpBoost = e; settings.jumpPower = v
 end)
-MovementSec:CreateToggle("No Jump Cooldown", false, function(v) settings.noJumpCooldown = v end)
 
--- esp
-local ESPSec = CombatTab:CreateSection("🛡 ESP")
-ESPSec:CreateTogglePicker("ESP Highlight", settings.espHighlightColor, false, function(e, c)
-    settings.espHighlight = e
-    if typeof(c) == "Color3" then settings.espHighlightColor = c end
+gravityToggleSlider = MovementSec:CreateToggleSlider("Gravity", 0, 500, 196.2, false, function(e, v)
+    settings.gravityEnabled = e
+    settings.gravityValue = v
+    workspace.Gravity = e and v or 196.2
 end)
-ESPSec:CreateToggle("ESP Name", false, function(v) settings.espName = v end)
-ESPSec:CreateToggle("ESP Box", false, function(v) settings.espBox = v end)
-ESPSec:CreateToggle("ESP Health", false, function(v) settings.espHealth = v end)
+MovementSec:CreateToggle("No Jump Cooldown", false, function(v) settings.noJumpCooldown = v end)
 
 -- visuals
 local VisualSec = CombatTab:CreateSection("👁 VISUAL")
@@ -827,8 +823,20 @@ freecamToggle = VisualSec:CreateToggle("Freecam (Shift+P)", false, function(v)
     ToggleFreecam(v)
 end)
 
+local ESPTab = Window:CreateTab("☣️ ESP")
+-- esp
+local ESPSec = ESPTab:CreateSection("🛡 ESP")
+ESPSec:CreateTogglePicker("ESP Highlight", settings.espHighlightColor, false, function(e, c)
+    settings.espHighlight = e
+    if typeof(c) == "Color3" then settings.espHighlightColor = c end
+end)
+ESPSec:CreateToggle("ESP Name", false, function(v) settings.espName = v end)
+ESPSec:CreateToggle("ESP Box", false, function(v) settings.espBox = v end)
+ESPSec:CreateToggle("ESP Health", false, function(v) settings.espHealth = v end)
+
+local AIMTab = Window:CreateTab("🎯 AIMBOT")
 -- aim
-local AimbotSec = CombatTab:CreateSection("🎯 AIMBOT")
+local AimbotSec = AIMTab:CreateSection("🎯 AIM")
 AimbotSec:CreateToggle("Enable Aimbot", false, function(v) settings.aimbot = v end)
 AimbotSec:CreateSlider("Aimbot FOV", 10, 360, 90, function(v)
     settings.aimbotFov = v
@@ -983,13 +991,6 @@ teleportToMouseToggle = TeleportSec:CreateToggle("🎯 Tp to Mouse (Ctrl+LMB)", 
     settings.teleportToMouse = v
 end)
 
--- gravity
-local GravitySec = OtherTab:CreateSection("🌍 GRAVITY")
-GravitySec:CreateToggleSlider("Gravity Control", 0, 500, 196.2, false, function(e, v)
-    settings.gravityEnabled = e
-    settings.gravityValue = v
-    workspace.Gravity = e and v or 196.2
-end)
 
 local DeleteToolsSec = OtherTab:CreateSection("🗑 DELETE TOOLS")
 
