@@ -1,4 +1,5 @@
---[[ zlib
+--[[
+zlib
 Copyright (c) 2026 .hilkach.
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from
@@ -15,7 +16,227 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ]]
 
--- loading icon
+local freecamActive = false
+local rightMousePressed = false
+local fovCircle = nil
+local RunService = game:GetService("RunService")
+local flyActive = false
+local noclipActive = false
+local noclipConnection = nil
+
+-- unload function
+if _G.XenoUnload then _G.XenoUnload() end
+local scriptRunning = true
+local allConnections = {}
+local ESPObjects = {}
+local deleteHistory = {}
+
+-- settings
+local settings = {
+    fly = false, flySpeed = 0.8,
+    walkBoost = false, walkPower = 0.5,
+    jumpBoost = false, jumpPower = 3.5,
+    noJumpCooldown = false,
+    espHighlight = false, espHighlightColor = Color3.fromRGB(0, 60, 150),
+    espName = false, espBox = false, espHealth = false,
+    fullbright = false,
+    noclip = false,
+    hitbox = false, hitboxSize = 5,
+    freecam = false,
+    aimbot = false,
+    aimbotFov = 90,
+    aimbotSmoothness = 5,
+    aimPart = "Head",
+    showFovCircle = false,
+    aimOnKey = false,
+    wallCheck = false,
+    aimKey = Enum.UserInputType.MouseButton2,
+    gravityEnabled = false,
+    gravityValue = 50,
+    teleportToMouse = false
+}
+
+local function clearAllESP()
+    for _, objList in pairs(ESPObjects) do
+        for _, obj in pairs(objList) do
+            pcall(function() obj:Destroy() end)
+        end
+    end
+    ESPObjects = {}
+
+    local PlayersService = game:GetService("Players")
+    for _, p in pairs(PlayersService:GetPlayers()) do
+        if p.Character then
+            local c = p.Character
+            if c:FindFirstChild("XenoESP_Highlight") then c.XenoESP_Highlight:Destroy() end
+            if c:FindFirstChild("XenoESP_Name") then c.XenoESP_Name:Destroy() end
+            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+            if root then
+                if root:FindFirstChild("XenoESP_Box") then root.XenoESP_Box:Destroy() end
+                if root:FindFirstChild("XenoESP_Health") then root.XenoESP_Health:Destroy() end
+            end
+        end
+    end
+end
+
+
+local function restoreAllDeleted()
+    if deleteHistory and #deleteHistory > 0 then
+        print("🔄 Restoring " .. #deleteHistory .. " deleted objects...")
+        while #deleteHistory > 0 do
+            local data = table.remove(deleteHistory)
+            pcall(function()
+                local newPart = data.clone:Clone()
+                for prop, val in pairs(data.props) do
+                    newPart[prop] = val
+                end
+                newPart.Parent = data.props.Parent
+            end)
+        end
+        print("✅ All objects restored!")
+    end
+end
+
+
+local function resetAllSettings()
+
+    workspace.Gravity = 196.2
+    
+
+    local Lighting = game:GetService("Lighting")
+    Lighting.Brightness = 1
+    Lighting.GlobalShadows = true
+
+    local cam = workspace.CurrentCamera
+    cam.CameraType = Enum.CameraType.Custom
+
+
+    local player = game.Players.LocalPlayer
+    local char = player.Character
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Anchored = false
+            hrp.Velocity = Vector3.zero
+        end
+
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = 16
+            hum.JumpPower = 50
+        end
+    end
+
+
+    local PlayersService = game:GetService("Players")
+    for _, p in pairs(PlayersService:GetPlayers()) do
+        if p ~= player and p.Character then
+            local head = p.Character:FindFirstChild("Head")
+            if head then
+                head.Size = Vector3.new(2, 1, 1)
+                head.Transparency = 0
+                head.CanCollide = true
+            end
+        end
+    end
+
+
+    if freecamActive then
+        RunService:UnbindFromRenderStep("Freecam")
+        freecamActive = false
+        rightMousePressed = false
+        UIS.MouseBehavior = Enum.MouseBehavior.Default
+    end
+
+
+    if fovCircle then
+        pcall(function() fovCircle:Remove() end)
+        fovCircle = nil
+    end
+
+
+    flyActive = false
+    settings.fly = false
+
+    settings.walkBoost = false
+    settings.walkPower = 0.5
+
+    settings.jumpBoost = false
+    settings.jumpPower = 3.5
+
+
+    if noclipActive then
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+        noclipActive = false
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+    settings.noclip = false
+
+    settings.fullbright = false
+    Lighting.Brightness = 1
+    Lighting.GlobalShadows = true
+
+
+    settings.gravityEnabled = false
+    settings.gravityValue = 50
+    workspace.Gravity = 196.2
+end
+
+
+_G.XenoUnload = function()
+    if not scriptRunning then return end
+    scriptRunning = false
+
+    print("🔄 Unloading XENO DARK...")
+
+
+    restoreAllDeleted()
+
+
+    resetAllSettings()
+
+
+    for _, conn in pairs(allConnections) do
+        pcall(function() conn:Disconnect() end)
+    end
+    allConnections = {}
+
+    clearAllESP()
+
+
+    local player = game.Players.LocalPlayer
+    local gui = player.PlayerGui:FindFirstChild("MinimalUI")
+    if gui then gui:Destroy() end
+
+    local splash = player.PlayerGui:FindFirstChild("MinimalUILoader")
+    if splash then splash:Destroy() end
+
+
+    if fovCircle then
+        pcall(function() fovCircle:Remove() end)
+        fovCircle = nil
+    end
+
+    _G.XenoUnload = nil
+    print("✅ XENO DARK: Fully Unloaded!")
+end
+
+-- loading logo
 local player = game.Players.LocalPlayer
 local splashGui = Instance.new("ScreenGui")
 splashGui.Name = "MinimalUILoader"
@@ -40,383 +261,21 @@ splashIcon.ScaleType = Enum.ScaleType.Fit
 splashIcon.Parent = splashContainer
 
 local tweenService = game:GetService("TweenService")
-
-local fadeIn = tweenService:Create(splashIcon, 
-    TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-    {ImageTransparency = 0.3}
-)
-
-local fadeOut = tweenService:Create(splashIcon, 
-    TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), 
-    {ImageTransparency = 1}
-)
-
+local fadeIn = tweenService:Create(splashIcon, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 0.3})
+local fadeOut = tweenService:Create(splashIcon, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {ImageTransparency = 1})
 fadeIn:Play()
-
 task.wait(0.8)
 task.wait(0.5)
 
--- main
-local MinimalUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI_test.lua"))()
+-- library
+local MinimalUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI.lua"))()
 
-local player = game.Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
 local cam = workspace.CurrentCamera
 local Players = game:GetService("Players")
 local mouse = player:GetMouse()
-
-local settings = {
-    fly = false, flySpeed = 0.8,
-    walkBoost = false, walkPower = 0.5,
-    jumpBoost = false, jumpPower = 3.5,
-    noJumpCooldown = false,
-    esp = false,
-    fullbright = false,
-    noclip = false,
-    hitbox = false,
-    hitboxSize = 5,
-    freecam = false,
-    aimbot = false,
-    aimbotFov =90,
-    aimbotSmoothness = 5,
-    aimPart = "Head",
-    showFovCircle = false,
-    aimOnKey = false,
-    wallCheck = false,
-    aimKey = Enum.UserInputType.MouseButton2,
-    gravityEnabled = false,
-    gravityValue = 50,
-    teleportToMouse = false
-}
-
--- tp to mouse
-local function teleportToMouse()
-    local char = player.Character
-    if not char then return end
-    
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    
-    local mousePos = mouse.Hit
-    if mousePos and mousePos.Position then
-        local wasAnchored = hrp.Anchored
-        
-        if wasAnchored then
-            hrp.Anchored = false
-        end
-        
-        hrp.CFrame = CFrame.new(mousePos.Position)
-        
-        task.wait(0.05)
-        
-        if wasAnchored then
-            hrp.Anchored = true
-        end
-        
-
-    end
-end
-
-
--- find player
-local function findPlayerByPartialName(partialName)
-    if not partialName or partialName == "" then return nil end
-    
-    local partialLower = string.lower(partialName)
-    local bestMatch = nil
-    
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player then
-            local playerNameLower = string.lower(p.Name)
-            if string.sub(playerNameLower, 1, #partialLower) == partialLower then
-                bestMatch = p.Name
-                break
-            end
-        end
-    end
-    
-    return bestMatch
-end
-
-
--- aimbot
-local Drawing = Drawing or {}
-local fovCircle = Drawing.new("Circle")
-if fovCircle then
-    fovCircle.Thickness = 1
-    fovCircle.NumSides = 64
-    fovCircle.Radius = settings.aimbotFov
-    fovCircle.Filled = false
-    fovCircle.Visible = false
-    fovCircle.Color = Color3.new(1, 0, 0)
-    fovCircle.Transparency = 0.5
-end
-
-local targetDot = Drawing.new("Circle")
-if targetDot then
-    targetDot.Thickness = 2
-    targetDot.NumSides = 32
-    targetDot.Radius = 6
-    targetDot.Filled = true
-    targetDot.Color = Color3.new(1, 1, 1)
-    targetDot.Transparency = 0.3
-    targetDot.Visible = false
-end
-
-local targetDotOutline = Drawing.new("Circle")
-if targetDotOutline then
-    targetDotOutline.Thickness = 1
-    targetDotOutline.NumSides = 32
-    targetDotOutline.Radius = 8
-    targetDotOutline.Filled = false
-    targetDotOutline.Color = Color3.new(0, 0, 0)
-    targetDotOutline.Transparency = 0.5
-    targetDotOutline.Visible = false
-end
-
-local targetDotWall = Drawing.new("Circle")
-if targetDotWall then
-    targetDotWall.Thickness = 2
-    targetDotWall.NumSides = 32
-    targetDotWall.Radius = 6
-    targetDotWall.Filled = true
-    targetDotWall.Color = Color3.new(1, 0, 0)
-    targetDotWall.Transparency = 0.3
-    targetDotWall.Visible = false
-end
-
-local currentTarget = nil
-local targetPart = nil
-local lockedPart = nil
-local isAiming = false
-local targetVisible = false
-
-local function isTargetVisible(targetPos)
-    if not player.Character or not player.Character:FindFirstChild("Head") then 
-        return false 
-    end
-    
-    local origin = cam.CFrame.Position
-    local direction = (targetPos - origin).Unit
-    local distance = (targetPos - origin).Magnitude
-    
-    local raycastParams = RaycastParams.new()
-    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-    raycastParams.FilterDescendantsInstances = {player.Character}
-    
-    local raycastResult = workspace:Raycast(origin, direction * distance, raycastParams)
-    
-    if raycastResult then
-        local hit = raycastResult.Instance
-        if targetPart and hit:IsDescendantOf(targetPart.Parent) then
-            return true
-        end
-        if hit.Transparency and hit.Transparency > 0.8 then
-            return true
-        end
-        return false
-    end
-    
-    return true
-end
-
-local function getClosestTarget()
-    if not settings.aimbot then return nil, nil end
-    
-    local center = Vector2.new(mouse.X, mouse.Y + 60)
-    local closestDist = settings.aimbotFov
-    local closestPlayer = nil
-    local closestPart = nil
-    local bestScore = math.huge
-    
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player and p.Character then
-            local char = p.Character
-            local humanoid = char:FindFirstChildOfClass("Humanoid")
-            
-            if humanoid and humanoid.Health > 0 then
-                local partsToCheck = {"Head", "UpperTorso", "LowerTorso", "Torso"}
-                for _, partName in pairs(partsToCheck) do
-                    local part = char:FindFirstChild(partName)
-                    if part then
-                        local pos, onScreen = cam:WorldToViewportPoint(part.Position)
-                        if onScreen then
-                            local aimDist = (Vector2.new(pos.X, pos.Y) - center).Magnitude
-                            
-                            local playerDist = 0
-                            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                                local myPos = player.Character.HumanoidRootPart.Position
-                                playerDist = (part.Position - myPos).Magnitude
-                            end
-                            
-                            local visible = true
-                            if settings.wallCheck then
-                                visible = isTargetVisible(part.Position)
-                            end
-
-                            if not settings.wallCheck or visible then
-                                local score = (aimDist * 0.7) + (playerDist * 0.3)
-
-                                if aimDist < closestDist and score < bestScore then
-                                    bestScore = score
-                                    closestPlayer = p
-                                    closestPart = part
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-    
-    return closestPlayer, closestPart
-end
-
-local function smoothAim(targetPos, smoothness)
-    if not targetPos then return end
-    
-    local currentLook = cam.CFrame.LookVector
-    local targetLook = (targetPos - cam.CFrame.Position).Unit
-    
-    local smoothFactor = math.min(1, smoothness * 0.1)
-    local newLook = currentLook:Lerp(targetLook, smoothFactor)
-    
-    local newCF = CFrame.lookAt(cam.CFrame.Position, cam.CFrame.Position + newLook)
-    cam.CFrame = newCF
-end
-
-UIS.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        if settings.aimbot and currentTarget and targetPart then
-            if settings.wallCheck then
-                if targetVisible then
-                    lockedPart = targetPart
-                    isAiming = true
-                end
-            else
-                lockedPart = targetPart
-                isAiming = true
-            end
-        end
-    end
-end)
-
-UIS.InputEnded:Connect(function(input, gp)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isAiming = false
-        lockedPart = nil
-    end
-end)
-
-RunService.RenderStepped:Connect(function()
-    if settings.showFovCircle and settings.aimbot and fovCircle then
-        fovCircle.Position = Vector2.new(mouse.X, mouse.Y + 60)
-        fovCircle.Radius = settings.aimbotFov
-        fovCircle.Visible = true
-    elseif fovCircle then
-        fovCircle.Visible = false
-    end
-    
-    if not isAiming then
-        local target, part = getClosestTarget()
-        currentTarget = target
-        targetPart = part
-        
-        if targetPart then
-            if settings.wallCheck then
-                targetVisible = isTargetVisible(targetPart.Position)
-            else
-                targetVisible = true
-            end
-        end
-    else
-        if lockedPart then
-            if settings.wallCheck then
-                targetVisible = isTargetVisible(lockedPart.Position)
-            else
-                targetVisible = true
-            end
-        end
-    end
-    
-    local showPart = isAiming and lockedPart or targetPart
-    if settings.aimbot and showPart and settings.showFovCircle then
-        local pos, onScreen = cam:WorldToViewportPoint(showPart.Position)
-        if onScreen then
-            local dotPos = Vector2.new(pos.X, pos.Y)
-            
-            if settings.wallCheck and not targetVisible then
-                if targetDot then targetDot.Visible = false end
-                if targetDotOutline then targetDotOutline.Visible = false end
-                if targetDotWall then
-                    targetDotWall.Position = dotPos
-                    targetDotWall.Visible = true
-                end
-            else
-                if targetDot then
-                    targetDot.Position = dotPos
-                    targetDot.Visible = true
-                end
-                if targetDotOutline then
-                    targetDotOutline.Position = dotPos
-                    targetDotOutline.Visible = true
-                end
-                if targetDotWall then targetDotWall.Visible = false end
-            end
-        else
-            if targetDot then targetDot.Visible = false end
-            if targetDotOutline then targetDotOutline.Visible = false end
-            if targetDotWall then targetDotWall.Visible = false end
-        end
-    else
-        if targetDot then targetDot.Visible = false end
-        if targetDotOutline then targetDotOutline.Visible = false end
-        if targetDotWall then targetDotWall.Visible = false end
-    end
-    
-    if settings.aimbot then
-        local shouldAim = false
-        
-        if settings.aimOnKey then
-            if settings.aimKey == Enum.UserInputType.MouseButton2 then
-                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
-            elseif settings.aimKey == Enum.UserInputType.MouseButton1 then
-                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
-            elseif settings.aimKey == Enum.KeyCode.LeftAlt then
-                shouldAim = UIS:IsKeyDown(Enum.KeyCode.LeftAlt)
-            else
-                shouldAim = UIS:IsKeyDown(settings.aimKey)
-            end
-        else
-            shouldAim = true
-        end
-        
-        if shouldAim then
-            local aimAt = lockedPart or targetPart
-            
-            if aimAt then
-                local canAim = true
-                if settings.wallCheck then
-                    canAim = isTargetVisible(aimAt.Position)
-                end
-                
-                if canAim and aimAt and aimAt.Parent then
-                    local smoothness = 11 - settings.aimbotSmoothness
-                    smoothAim(aimAt.Position, smoothness)
-                end
-            end
-        elseif not shouldAim then
-            isAiming = false
-            lockedPart = nil
-        end
-    end
-end)
-
 
 -- freecam
 local pi, rad, clamp, exp = math.pi, math.rad, math.clamp, math.exp
@@ -449,9 +308,7 @@ end
 local cameraPos, cameraRot, cameraFov = Vector3.new(), Vector2.new(), 70
 local velSpring, panSpring, fovSpring = Spring.new(1.5, Vector3.new()), Spring.new(1.0, Vector2.new()), Spring.new(4.0, 0)
 local InputMap = {keys = {W=0,A=0,S=0,D=0,E=0,Q=0}, mouse = {Delta = Vector2.new(), Wheel = 0}}
-local freecamActive = false
 local rightMousePressed = false
-local lastMousePos = nil
 
 local function StepFreecam(dt)
     if not freecamActive then 
@@ -524,6 +381,7 @@ local function ToggleFreecam(state)
     end
 end
 
+
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and settings.freecam and freecamActive then
         if input.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -553,7 +411,6 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 
-
 UIS.InputBegan:Connect(function(i)
     if i.KeyCode and i.KeyCode.Name:len() == 1 and settings.freecam and freecamActive then
         InputMap.keys[i.KeyCode.Name] = 1
@@ -567,18 +424,304 @@ UIS.InputEnded:Connect(function(i)
 end)
 
 
+
+-- mtp, partial name
+local function teleportToMouse()
+    local char = player.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local mousePos = mouse.Hit
+    if mousePos and mousePos.Position then
+        local wasAnchored = hrp.Anchored
+        if wasAnchored then hrp.Anchored = false end
+        hrp.CFrame = CFrame.new(mousePos.Position)
+        task.wait(0.05)
+        if wasAnchored then hrp.Anchored = true end
+    end
+end
+
+local function findPlayerByPartialName(partialName)
+    if not partialName or partialName == "" then return nil end
+    local partialLower = string.lower(partialName)
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then
+            if string.sub(string.lower(p.Name), 1, #partialLower) == partialLower then
+                return p.Name
+            end
+        end
+    end
+    return nil
+end
+
+-- aimbot
+local Drawing = Drawing or {}
+local fovCircle = Drawing.new("Circle")
+if fovCircle then
+    fovCircle.Thickness = 1
+    fovCircle.NumSides = 64
+    fovCircle.Radius = settings.aimbotFov
+    fovCircle.Filled = false
+    fovCircle.Visible = false
+    fovCircle.Color = Color3.new(1, 0, 0)
+    fovCircle.Transparency = 0.5
+end
+
+local targetDot = Drawing.new("Circle")
+if targetDot then
+    targetDot.Thickness = 2
+    targetDot.NumSides = 32
+    targetDot.Radius = 6
+    targetDot.Filled = true
+    targetDot.Color = Color3.new(1, 1, 1)
+    targetDot.Transparency = 0.3
+    targetDot.Visible = false
+end
+
+local targetDotOutline = Drawing.new("Circle")
+if targetDotOutline then
+    targetDotOutline.Thickness = 1
+    targetDotOutline.NumSides = 32
+    targetDotOutline.Radius = 8
+    targetDotOutline.Filled = false
+    targetDotOutline.Color = Color3.new(0, 0, 0)
+    targetDotOutline.Transparency = 0.5
+    targetDotOutline.Visible = false
+end
+
+local targetDotWall = Drawing.new("Circle")
+if targetDotWall then
+    targetDotWall.Thickness = 2
+    targetDotWall.NumSides = 32
+    targetDotWall.Radius = 6
+    targetDotWall.Filled = true
+    targetDotWall.Color = Color3.new(1, 0, 0)
+    targetDotWall.Transparency = 0.3
+    targetDotWall.Visible = false
+end
+
+local currentTarget = nil
+local targetPart = nil
+local lockedPart = nil
+local isAiming = false
+local targetVisible = false
+
+local function isTargetVisible(targetPos, targetPart)
+    if not player.Character or not player.Character:FindFirstChild("Head") then 
+        return false 
+    end
+    local origin = cam.CFrame.Position
+    local direction = (targetPos - origin).Unit
+    local distance = (targetPos - origin).Magnitude
+    
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    raycastParams.FilterDescendantsInstances = {player.Character}
+    
+    local raycastResult = workspace:Raycast(origin, direction * distance, raycastParams)
+    if raycastResult then
+        local hit = raycastResult.Instance
+        if targetPart and hit:IsDescendantOf(targetPart.Parent) then
+            return true
+        end
+        if hit.Transparency and hit.Transparency > 0.8 then
+            return true
+        end
+        return false
+    end
+    return true
+end
+
+local function getClosestTarget()
+    if not settings.aimbot then return nil, nil end
+    local center = Vector2.new(mouse.X, mouse.Y + 60)
+    local closestDist = settings.aimbotFov
+    local closestPlayer = nil
+    local closestPart = nil
+    local bestScore = math.huge
+    
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local char = p.Character
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local partsToCheck = {"Head", "UpperTorso"}
+                for _, partName in pairs(partsToCheck) do
+                    local part = char:FindFirstChild(partName)
+                    if part then
+                        local pos, onScreen = cam:WorldToViewportPoint(part.Position)
+                        if onScreen then
+                            local aimDist = (Vector2.new(pos.X, pos.Y) - center).Magnitude
+                            local playerDist = 0
+                            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                                local myPos = player.Character.HumanoidRootPart.Position
+                                playerDist = (part.Position - myPos).Magnitude
+                            end
+                            
+                            local visible = true
+                            if settings.wallCheck then
+                                visible = isTargetVisible(part.Position, part)
+                            end
+
+                            if not settings.wallCheck or visible then
+                                local score = (aimDist * 0.7) + (playerDist * 0.3)
+                                if aimDist < closestDist and score < bestScore then
+                                    bestScore = score
+                                    closestPlayer = p
+                                    closestPart = part
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return closestPlayer, closestPart
+end
+
+local function smoothAim(targetPos, smoothness)
+    if not targetPos then return end
+    local currentLook = cam.CFrame.LookVector
+    local targetLook = (targetPos - cam.CFrame.Position).Unit
+    local smoothFactor = math.min(1, smoothness * 0.1)
+    local newLook = currentLook:Lerp(targetLook, smoothFactor)
+    local newCF = CFrame.lookAt(cam.CFrame.Position, cam.CFrame.Position + newLook)
+    cam.CFrame = newCF
+end
+
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if settings.aimbot and currentTarget and targetPart then
+            if settings.wallCheck then
+                if targetVisible then
+                    lockedPart = targetPart
+                    isAiming = true
+                end
+            else
+                lockedPart = targetPart
+                isAiming = true
+            end
+        end
+    end
+end)
+
+UIS.InputEnded:Connect(function(input, gp)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isAiming = false
+        lockedPart = nil
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if settings.showFovCircle and settings.aimbot and fovCircle then
+        fovCircle.Position = Vector2.new(mouse.X, mouse.Y + 60)
+        fovCircle.Radius = settings.aimbotFov
+        fovCircle.Visible = true
+    elseif fovCircle then
+        fovCircle.Visible = false
+    end
+    
+    if not isAiming then
+        local target, part = getClosestTarget()
+        currentTarget = target
+        targetPart = part
+        if targetPart then
+            if settings.wallCheck then
+                targetVisible = isTargetVisible(targetPart.Position, targetPart)
+            else
+                targetVisible = true
+            end
+        end
+    else
+        if lockedPart then
+            if settings.wallCheck then
+                targetVisible = isTargetVisible(lockedPart.Position, lockedPart)
+            else
+                targetVisible = true
+            end
+        end
+    end
+    
+    local showPart = isAiming and lockedPart or targetPart
+    if settings.aimbot and showPart and settings.showFovCircle then
+        local pos, onScreen = cam:WorldToViewportPoint(showPart.Position)
+        if onScreen then
+            local dotPos = Vector2.new(pos.X, pos.Y)
+            if settings.wallCheck and not targetVisible then
+                if targetDot then targetDot.Visible = false end
+                if targetDotOutline then targetDotOutline.Visible = false end
+                if targetDotWall then
+                    targetDotWall.Position = dotPos
+                    targetDotWall.Visible = true
+                end
+            else
+                if targetDot then
+                    targetDot.Position = dotPos
+                    targetDot.Visible = true
+                end
+                if targetDotOutline then
+                    targetDotOutline.Position = dotPos
+                    targetDotOutline.Visible = true
+                end
+                if targetDotWall then targetDotWall.Visible = false end
+            end
+        else
+            if targetDot then targetDot.Visible = false end
+            if targetDotOutline then targetDotOutline.Visible = false end
+            if targetDotWall then targetDotWall.Visible = false end
+        end
+    else
+        if targetDot then targetDot.Visible = false end
+        if targetDotOutline then targetDotOutline.Visible = false end
+        if targetDotWall then targetDotWall.Visible = false end
+    end
+    
+    if settings.aimbot then
+        local shouldAim = false
+        if settings.aimOnKey then
+            if settings.aimKey == Enum.UserInputType.MouseButton2 then
+                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+            elseif settings.aimKey == Enum.UserInputType.MouseButton1 then
+                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
+            elseif settings.aimKey == Enum.KeyCode.LeftAlt then
+                shouldAim = UIS:IsKeyDown(Enum.KeyCode.LeftAlt)
+            else
+                shouldAim = UIS:IsKeyDown(settings.aimKey)
+            end
+        else
+            shouldAim = true
+        end
+        
+        if shouldAim then
+            local aimAt = lockedPart or targetPart
+            if aimAt then
+                local canAim = true
+                if settings.wallCheck then
+                    canAim = isTargetVisible(aimAt.Position, aimAt)
+                end
+                if canAim and aimAt and aimAt.Parent then
+                    local smoothness = 11 - settings.aimbotSmoothness
+                    smoothAim(aimAt.Position, smoothness)
+                end
+            end
+        elseif not shouldAim then
+            isAiming = false
+            lockedPart = nil
+        end
+    end
+end)
+
 -- fly
 local flyActive = false
-
 local function ToggleFly(state)
     flyActive = state
     settings.fly = state
-    
     if not state then
         local char = player.Character
         if char and char:FindFirstChild("HumanoidRootPart") then
-            local hrp = char.HumanoidRootPart
-            hrp.Velocity = Vector3.zero
+            char.HumanoidRootPart.Velocity = Vector3.zero
         end
     end
 end
@@ -586,11 +729,9 @@ end
 -- noclip
 local noclipConnection = nil
 local noclipActive = false
-
 local function enableNoclip()
     if noclipActive then return end
     noclipActive = true
-    
     if noclipConnection then noclipConnection:Disconnect() end
     noclipConnection = RunService.Stepped:Connect(function()
         if settings.noclip and player.Character then
@@ -602,15 +743,12 @@ local function enableNoclip()
         end
     end)
 end
-
 local function disableNoclip()
     noclipActive = false
-    
     if noclipConnection then
         noclipConnection:Disconnect()
         noclipConnection = nil
     end
-    
     if player.Character then
         for _, part in pairs(player.Character:GetDescendants()) do
             if part:IsA("BasePart") then
@@ -619,22 +757,30 @@ local function disableNoclip()
         end
     end
 end
-
 local function toggleNoclip(state)
     settings.noclip = state
-    if state then
-        enableNoclip()
-    else
-        disableNoclip()
+    if state then enableNoclip() else disableNoclip() end
+end
+
+-- UI
+local Window = MinimalUI:CreateWindow("XENO DARK V4")
+Window:SetTheme(Color3.fromRGB(0, 60, 150))
+Window:SetMenuTheme("dark")
+
+-- close
+local function onMenuClose()
+    if scriptRunning then 
+        _G.XenoUnload() 
     end
 end
 
+local oldClose = Window.Close
+Window.Close = function()
+    onMenuClose()
+    if oldClose then oldClose() end
+end
 
--- ui
-
-local Window = MinimalUI:CreateWindow("XENO DARK V17")
-Window:SetTheme(Color3.fromRGB(0, 60, 150))
-Window:SetMenuTheme("dark")
+Window:SetKey(Enum.KeyCode.RightControl)
 
 local flyToggleSlider = nil
 local walkToggleSlider = nil
@@ -643,93 +789,61 @@ local hitboxToggleSlider = nil
 local freecamToggle = nil
 local teleportToMouseToggle = nil
 
-
 local CombatTab = Window:CreateTab("😎 MAIN")
 
-
+-- movement
 local MovementSec = CombatTab:CreateSection("🏃 MOVEMENT")
-
-flyToggleSlider = MovementSec:CreateToggleSlider("Fly (Q)", 0.1, 5, 0.8, false, function(enabled, value)
-    settings.fly = enabled
-    settings.flySpeed = value
-    ToggleFly(enabled)
+flyToggleSlider = MovementSec:CreateToggleSlider("Fly (Q)", 0.1, 5, 0.8, false, function(e, v)
+    settings.fly = e; settings.flySpeed = v; ToggleFly(e)
 end)
-
-walkToggleSlider = MovementSec:CreateToggleSlider("Walk Boost", 0.1, 3, 0.5, false, function(enabled, value)
-    settings.walkBoost = enabled
-    settings.walkPower = value
+walkToggleSlider = MovementSec:CreateToggleSlider("Walk Boost", 0.1, 3, 0.5, false, function(e, v)
+    settings.walkBoost = e; settings.walkPower = v
 end)
-
-jumpToggleSlider = MovementSec:CreateToggleSlider("Jump Boost", 1, 15, 3.5, false, function(enabled, value)
-    settings.jumpBoost = enabled
-    settings.jumpPower = value
+jumpToggleSlider = MovementSec:CreateToggleSlider("Jump Boost", 1, 15, 3.5, false, function(e, v)
+    settings.jumpBoost = e; settings.jumpPower = v
 end)
+MovementSec:CreateToggle("No Jump Cooldown", false, function(v) settings.noJumpCooldown = v end)
 
-MovementSec:CreateToggle("No Jump Cooldown", false, function(v)
-    settings.noJumpCooldown = v
+-- esp
+local ESPSec = CombatTab:CreateSection("🛡 ESP")
+ESPSec:CreateTogglePicker("ESP Highlight", settings.espHighlightColor, false, function(e, c)
+    settings.espHighlight = e
+    if typeof(c) == "Color3" then settings.espHighlightColor = c end
 end)
+ESPSec:CreateToggle("ESP Name", false, function(v) settings.espName = v end)
+ESPSec:CreateToggle("ESP Box", false, function(v) settings.espBox = v end)
+ESPSec:CreateToggle("ESP Health", false, function(v) settings.espHealth = v end)
 
+-- visuals
 local VisualSec = CombatTab:CreateSection("👁 VISUAL")
-
-
-VisualSec:CreateToggle("ESP Full", false, function(v)
-    settings.esp = v
-end)
-
-VisualSec:CreateToggle("FullBright", false, function(v)
-    settings.fullbright = v
-end)
-
-VisualSec:CreateToggle("NoClip", false, function(v)
-    toggleNoclip(v)
-end)
-
-hitboxToggleSlider = VisualSec:CreateToggleSlider("Hitbox Extender", 1, 20, 5, false, function(enabled, value)
-    settings.hitbox = enabled
-    settings.hitboxSize = value
+VisualSec:CreateToggle("FullBright", false, function(v) settings.fullbright = v end)
+VisualSec:CreateToggle("NoClip", false, function(v) toggleNoclip(v) end)
+hitboxToggleSlider = VisualSec:CreateToggleSlider("Hitbox Extender", 1, 20, 5, false, function(e, v)
+    settings.hitbox = e; settings.hitboxSize = v
 end)
 
 freecamToggle = VisualSec:CreateToggle("Freecam (Shift+P)", false, function(v)
     settings.freecam = v
-    ToggleFreecam(settings.freecam)
+    ToggleFreecam(v)
 end)
 
+-- aim
 local AimbotSec = CombatTab:CreateSection("🎯 AIMBOT")
-
-
-AimbotSec:CreateToggle("Enable Aimbot", false, function(v)
-    settings.aimbot = v
-end)
-
+AimbotSec:CreateToggle("Enable Aimbot", false, function(v) settings.aimbot = v end)
 AimbotSec:CreateSlider("Aimbot FOV", 10, 360, 90, function(v)
     settings.aimbotFov = v
-    if fovCircle then
-        fovCircle.Radius = v
-    end
+    if fovCircle then fovCircle.Radius = v end
 end)
+AimbotSec:CreateSlider("Smoothness", 1, 10, 5, function(v) settings.aimbotSmoothness = v end)
+AimbotSec:CreateToggle("Show FOV Circle", false, function(v) settings.showFovCircle = v end)
+AimbotSec:CreateToggle("Aim on Key (RMB)", false, function(v) settings.aimOnKey = v end)
+AimbotSec:CreateToggle("Wall Check", false, function(v) settings.wallCheck = v end)
 
-AimbotSec:CreateSlider("Smoothness", 1, 10, 5, function(v)
-    settings.aimbotSmoothness = v
-end)
-
-AimbotSec:CreateToggle("Show FOV Circle", false, function(v)
-    settings.showFovCircle = v
-end)
-
-AimbotSec:CreateToggle("Aim on Key (RMB)", false, function(v)
-    settings.aimOnKey = v
-end)
-
-AimbotSec:CreateToggle("Wall Check", false, function(v)
-    settings.wallCheck = v
-end)
-
-
--- other tab
-
+-- other
 local OtherTab = Window:CreateTab("🛠 OTHER")
-local ViewSec = OtherTab:CreateSection("👁 VIEW")
 
+-- view
+local ViewSec = OtherTab:CreateSection("👁 VIEW")
 local selectedViewPlayer = nil
 local isSpectating = false
 local viewPlayerDropdown = nil
@@ -738,34 +852,24 @@ local viewTextBoxApi = nil
 local function getViewPlayersList()
     local playersList = {}
     for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player then
-            table.insert(playersList, p.Name)
-        end
+        if p ~= player then table.insert(playersList, p.Name) end
     end
-    if #playersList == 0 then
-        table.insert(playersList, "No players")
-    end
+    if #playersList == 0 then table.insert(playersList, "No players") end
     return playersList
 end
 
 local function refreshViewDropdown()
-    if not viewPlayerDropdown then 
-        return 
-    end
+    if not viewPlayerDropdown then return end
     local newList = getViewPlayersList()
     viewPlayerDropdown:SetOptions(newList)
     if #newList > 0 and newList[1] ~= "No players" then
         viewPlayerDropdown:SetValue(newList[1])
         selectedViewPlayer = newList[1]
-        if viewTextBoxApi then
-            viewTextBoxApi:Set(selectedViewPlayer)
-        end
+        if viewTextBoxApi then viewTextBoxApi:Set(selectedViewPlayer) end
     else
         viewPlayerDropdown:SetValue("No players")
         selectedViewPlayer = nil
-        if viewTextBoxApi then
-            viewTextBoxApi:Set("")
-        end
+        if viewTextBoxApi then viewTextBoxApi:Set("") end
     end
 end
 
@@ -793,38 +897,24 @@ viewTextBoxApi = ViewSec:CreateTextBox("Enter player name:", "Type first letters
         if matchedPlayer then
             viewTextBoxApi:Set(matchedPlayer)
             selectedViewPlayer = matchedPlayer
-            if viewPlayerDropdown then
-                viewPlayerDropdown:SetValue(selectedViewPlayer)
-            end
+            if viewPlayerDropdown then viewPlayerDropdown:SetValue(selectedViewPlayer) end
         end
     end
 end)
 
 viewPlayerDropdown = ViewSec:CreateDropdown("Select player:", getViewPlayersList(), "Select...", function(selected)
     selectedViewPlayer = selected
-    if viewTextBoxApi then
-        viewTextBoxApi:Set(selected)
-    end
-    if isSpectating then
-        startSpectating()
-    end
+    if viewTextBoxApi then viewTextBoxApi:Set(selected) end
+    if isSpectating then startSpectating() end
 end)
 
-ViewSec:CreateButton("Refresh Players", function()
-    refreshViewDropdown()
-end)
-
+ViewSec:CreateButton("Refresh Players", function() refreshViewDropdown() end)
 ViewSec:CreateToggle("Spectate Mode", false, function(v)
-    if v then
-        startSpectating()
-    else
-        stopSpectating()
-    end
+    if v then startSpectating() else stopSpectating() end
 end)
 
-
+-- tp
 local TeleportSec = OtherTab:CreateSection("📍 TELEPORT")
-
 local selectedPlayer = nil
 local playerDropdown = nil
 local teleportTextBoxApi = nil
@@ -832,42 +922,27 @@ local teleportTextBoxApi = nil
 local function safeTeleport(targetCFrame)
     local char = player.Character
     if not char then return end
-    
     local hrp = char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
-    
     local wasAnchored = hrp.Anchored
-    
-    if wasAnchored then
-        hrp.Anchored = false
-    end
-    
+    if wasAnchored then hrp.Anchored = false end
     hrp.CFrame = targetCFrame
-    
     task.wait(0.05)
-    
-    if wasAnchored then
-        hrp.Anchored = true
-    end
+    if wasAnchored then hrp.Anchored = true end
 end
 
 local function getPlayersList()
     local playersList = {}
     for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player then
-            table.insert(playersList, p.Name)
-        end
+        if p ~= player then table.insert(playersList, p.Name) end
     end
-    if #playersList == 0 then
-        table.insert(playersList, "No players")
-    end
+    if #playersList == 0 then table.insert(playersList, "No players") end
     return playersList
 end
 
 local function refreshPlayerDropdown()
     if not playerDropdown then return end
-    local newList = getPlayersList()
-    playerDropdown:SetOptions(newList)
+    playerDropdown:SetOptions(getPlayersList())
 end
 
 teleportTextBoxApi = TeleportSec:CreateTextBox("Enter player name:", "Type first letters...", function(inputText)
@@ -876,18 +951,14 @@ teleportTextBoxApi = TeleportSec:CreateTextBox("Enter player name:", "Type first
         if matchedPlayer then
             teleportTextBoxApi:Set(matchedPlayer)
             selectedPlayer = matchedPlayer
-            if playerDropdown then
-                playerDropdown:SetValue(selectedPlayer)
-            end
+            if playerDropdown then playerDropdown:SetValue(selectedPlayer) end
         end
     end
 end)
 
 playerDropdown = TeleportSec:CreateDropdown("Select Player", getPlayersList(), "Select...", function(selected)
     selectedPlayer = selected
-    if teleportTextBoxApi then
-        teleportTextBoxApi:Set(selected)
-    end
+    if teleportTextBoxApi then teleportTextBoxApi:Set(selected) end
 end)
 
 TeleportSec:CreateButton("Teleport to Selected", function()
@@ -906,76 +977,104 @@ TeleportSec:CreateButton("Teleport to Camera", function()
     end
 end)
 
-TeleportSec:CreateButton("🔄 Refresh List", function()
-    refreshPlayerDropdown()
-end)
+TeleportSec:CreateButton("🔄 Refresh List", function() refreshPlayerDropdown() end)
 
-teleportToMouseToggle = TeleportSec:CreateToggle("🎯 Teleport to Mouse (Ctrl+LMB)", false, function(v)
+teleportToMouseToggle = TeleportSec:CreateToggle("🎯 Tp to Mouse (Ctrl+LMB)", false, function(v)
     settings.teleportToMouse = v
 end)
 
-
+-- gravity
 local GravitySec = OtherTab:CreateSection("🌍 GRAVITY")
+GravitySec:CreateToggleSlider("Gravity Control", 0, 500, 196.2, false, function(e, v)
+    settings.gravityEnabled = e
+    settings.gravityValue = v
+    workspace.Gravity = e and v or 196.2
+end)
 
-GravitySec:CreateToggleSlider("Gravity Control", 0, 500, 196.2, false, function(enabled, value)
-    settings.gravityEnabled = enabled
-    settings.gravityValue = value
-    
-    if enabled then
-        workspace.Gravity = value
-    else
-        workspace.Gravity = 196.2
+local DeleteToolsSec = OtherTab:CreateSection("🗑 DELETE TOOLS")
+
+local deleting = false
+local history = {}
+
+DeleteToolsSec:CreateToggle("Delete Mode", false, function(v)
+    deleting = v
+end)
+
+DeleteToolsSec:CreateButton("↩ Restore All", function()
+    local count = #history
+    if count == 0 then
+        print("Nothing to restore!")
+        return
+    end
+    while #history > 0 do
+        local data = table.remove(history)
+        pcall(function()
+            local newPart = data.clone:Clone()
+            for prop, val in pairs(data.props) do
+                newPart[prop] = val
+            end
+            newPart.Parent = data.props.Parent
+        end)
+    end
+    print("Restored " .. count .. " objects!")
+end)
+
+mouse.Button1Down:Connect(function()
+    if not deleting then return end
+    local target = mouse.Target
+    if target and target:IsA("BasePart") and not target:IsDescendantOf(player.Character) then
+        local clone = target:Clone()
+        local props = {
+            Parent = target.Parent,
+            Material = target.Material,
+            Color = target.Color,
+            Size = target.Size,
+            CFrame = target.CFrame,
+            Anchored = target.Anchored,
+            Transparency = target.Transparency,
+            CanCollide = target.CanCollide,
+            Name = target.Name
+        }
+        table.insert(history, {props = props, clone = clone})
+        target:Destroy()
     end
 end)
 
 -- info
 local InfoTab = Window:CreateTab("ℹ INFO")
 local InfoSec = InfoTab:CreateSection("ABOUT")
-InfoSec:CreateButton("XENO DARK V17", function()
-    print("XENO DARK V17 - Ultimate Cheat Hub by: Hilka-dilka (github)")
-end)
+InfoSec:CreateButton("XENO DARK V4", function() print("XENO DARK V4 - Ultimate Cheat Hub by: Hilka-dilka (github)") end)
 InfoSec:CreateButton("Credits: Hilka-dilka , MinimalUI (github)", function() end)
-InfoSec:CreateButton("Version: 17.0", function() end)
+InfoSec:CreateButton("Version: 4.0", function() end)
 
-Window:SetKey(Enum.KeyCode.RightControl)
-
--- esp
+--update
 local lastESPUpdate = 0
 
-local function clearAllESP()
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player and p.Character then
-            local c = p.Character
-
-            if c:FindFirstChild("XenoESP_Highlight") then
-                c.XenoESP_Highlight:Destroy()
-            end
-
-            if c:FindFirstChild("XenoESP_Name") then
-                c.XenoESP_Name:Destroy()
-            end
-
-            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-            if root and root:FindFirstChild("XenoESP_Box") then
-                root.XenoESP_Box:Destroy()
-            end
-        end
+local function clearPlayerESP(c)
+    if c:FindFirstChild("XenoESP_Highlight") then c.XenoESP_Highlight:Destroy() end
+    if c:FindFirstChild("XenoESP_Name") then c.XenoESP_Name:Destroy() end
+    local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+    if root then
+        if root:FindFirstChild("XenoESP_Box") then root.XenoESP_Box:Destroy() end
+        if root:FindFirstChild("XenoESP_Health") then root.XenoESP_Health:Destroy() end
     end
 end
 
 RunService.RenderStepped:Connect(function(dt)
+    if not scriptRunning then return end
+
     local char = player.Character
     if not char then return end
-    
     local hrp = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChildOfClass("Humanoid")
-    
+
+
     if hrp and hum and not settings.freecam then
         if settings.noJumpCooldown and UIS:IsKeyDown(Enum.KeyCode.Space) then
             hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
             hum.Jump = true
         end
-        
+
         if flyActive then
             hrp.Velocity = Vector3.zero
             local move = Vector3.zero
@@ -983,17 +1082,16 @@ RunService.RenderStepped:Connect(function(dt)
             if UIS:IsKeyDown(Enum.KeyCode.S) then move = move - cam.CFrame.LookVector end
             if UIS:IsKeyDown(Enum.KeyCode.A) then move = move - cam.CFrame.RightVector end
             if UIS:IsKeyDown(Enum.KeyCode.D) then move = move + cam.CFrame.RightVector end
-            
             if move.Magnitude > 0 then
                 hrp.CFrame = hrp.CFrame + move.Unit * settings.flySpeed
             end
         end
-        
+
         if settings.walkBoost and hum.MoveDirection.Magnitude > 0 then
             hrp.CFrame = hrp.CFrame + hum.MoveDirection * settings.walkPower
         end
     end
-    
+
     if settings.fullbright then
         Lighting.Brightness = 2
         Lighting.ClockTime = 14
@@ -1003,80 +1101,6 @@ RunService.RenderStepped:Connect(function(dt)
         Lighting.GlobalShadows = true
     end
 
-    if settings.esp then
-        if tick() - lastESPUpdate > 0.3 then
-            lastESPUpdate = tick()
-            
-            for _, p in pairs(Players:GetPlayers()) do
-                if p ~= player and p.Character then
-                    local c = p.Character
-                    local humTarget = c:FindFirstChildOfClass("Humanoid")
-
-                    if humTarget and humTarget.Health > 0 then
-                        if not c:FindFirstChild("XenoESP_Highlight") then
-                            local h = Instance.new("Highlight", c)
-                            h.Name = "XenoESP_Highlight"
-                            h.FillColor = Color3.fromRGB(0, 60, 150)
-                            h.FillTransparency = 0.5
-                            h.OutlineColor = Color3.new(1, 1, 1)
-                            h.OutlineTransparency = 0
-                        end
-
-                        if not c:FindFirstChild("XenoESP_Name") then
-                            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-                            if root then
-                                local bg = Instance.new("BillboardGui", c)
-                                bg.Name = "XenoESP_Name"
-                                bg.Size = UDim2.new(0, 100, 0, 30)
-                                bg.StudsOffset = Vector3.new(0, 3, 0)
-                                bg.AlwaysOnTop = true
-                                
-                                local name = Instance.new("TextLabel", bg)
-                                name.Size = UDim2.new(1, 0, 1, 0)
-                                name.BackgroundTransparency = 1
-                                name.Text = p.Name
-                                name.TextColor3 = Color3.new(1, 1, 1)
-                                name.TextStrokeColor3 = Color3.new(0, 0, 0)
-                                name.TextStrokeTransparency = 0
-                                name.Font = Enum.Font.GothamBold
-                                name.TextSize = 13
-                            end
-                        end
-
-                        local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-                        if root and not root:FindFirstChild("XenoESP_Box") then
-                            local box = Instance.new("BillboardGui", root)
-                            box.Name = "XenoESP_Box"
-                            box.Size = UDim2.new(4, 0, 6, 0)
-                            box.AlwaysOnTop = true
-                            
-                            local frame = Instance.new("Frame", box)
-                            frame.Size = UDim2.new(1, 0, 1, 0)
-                            frame.BackgroundTransparency = 1
-                            
-                            local stroke = Instance.new("UIStroke", frame)
-                            stroke.Color = Color3.new(1, 1, 1)
-                            stroke.Thickness = 1
-                        end
-                    else
-                        if c:FindFirstChild("XenoESP_Highlight") then
-                            c.XenoESP_Highlight:Destroy()
-                        end
-                        if c:FindFirstChild("XenoESP_Name") then
-                            c.XenoESP_Name:Destroy()
-                        end
-                        local rootDel = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-                        if rootDel and rootDel:FindFirstChild("XenoESP_Box") then
-                            rootDel.XenoESP_Box:Destroy()
-                        end
-                    end
-                end
-            end
-        end
-    else
-        clearAllESP()
-    end
-    
     if settings.hitbox then
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= player and p.Character then
@@ -1093,56 +1117,149 @@ RunService.RenderStepped:Connect(function(dt)
             if p ~= player and p.Character then
                 local head = p.Character:FindFirstChild("Head")
                 if head then
-                    head.Size = Vector3.new(2, 1, 1) 
+                    head.Size = Vector3.new(2, 1, 1)
                     head.Transparency = 0
                     head.CanCollide = true
                 end
             end
         end
     end
-end)
 
+    if settings.espHighlight or settings.espName or settings.espBox or settings.espHealth then
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= player and p.Character then
+                local c = p.Character
+                local humTarget = c:FindFirstChildOfClass("Humanoid")
+                local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+                if humTarget and humTarget.Health > 0 and root then
+                    
+                    if settings.espHighlight then
+                        local h = c:FindFirstChild("XenoESP_Highlight") or Instance.new("Highlight", c)
+                        h.Name = "XenoESP_Highlight"
+                        h.FillColor = settings.espHighlightColor
+                        h.FillTransparency = 0.5
+                        h.OutlineColor = Color3.new(1,1,1)
+                        h.OutlineTransparency = 0
+                    else
+                        if c:FindFirstChild("XenoESP_Highlight") then c.XenoESP_Highlight:Destroy() end
+                    end
+
+                    if settings.espName then
+                        if not c:FindFirstChild("XenoESP_Name") then
+                            local bg = Instance.new("BillboardGui", c)
+                            bg.Name = "XenoESP_Name"
+                            bg.Size = UDim2.new(0, 100, 0, 30)
+                            bg.StudsOffset = Vector3.new(0, 3, 0)
+                            bg.AlwaysOnTop = true
+                            local name = Instance.new("TextLabel", bg)
+                            name.Size = UDim2.new(1,0,1,0)
+                            name.BackgroundTransparency = 1
+                            name.Text = p.Name
+                            name.TextColor3 = Color3.new(1,1,1)
+                            name.TextStrokeColor3 = Color3.new(0,0,0)
+                            name.TextStrokeTransparency = 0
+                            name.Font = Enum.Font.GothamBold
+                            name.TextSize = 13
+                        end
+                    else
+                        if c:FindFirstChild("XenoESP_Name") then c.XenoESP_Name:Destroy() end
+                    end
+
+                    if settings.espBox then
+                        if not root:FindFirstChild("XenoESP_Box") then
+                            local box = Instance.new("BillboardGui", root)
+                            box.Name = "XenoESP_Box"
+                            box.Size = UDim2.new(4,0,6,0)
+                            box.AlwaysOnTop = true
+                            local frame = Instance.new("Frame", box)
+                            frame.Size = UDim2.new(1,0,1,0)
+                            frame.BackgroundTransparency = 1
+                            local stroke = Instance.new("UIStroke", frame)
+                            stroke.Color = Color3.new(1,1,1)
+                            stroke.Thickness = 1
+                        end
+                    else
+                        if root:FindFirstChild("XenoESP_Box") then root.XenoESP_Box:Destroy() end
+                    end
+
+                    if settings.espHealth then
+                        local healthGui = root:FindFirstChild("XenoESP_Health")
+                        if not healthGui then
+                            healthGui = Instance.new("BillboardGui", root)
+                            healthGui.Name = "XenoESP_Health"
+                            healthGui.Size = UDim2.new(5, 0, 6, 0)
+                            healthGui.StudsOffset = Vector3.new(0, 0, 0)
+                            healthGui.AlwaysOnTop = true
+                            healthGui.Adornee = root
+                            healthGui.MaxDistance = 500
+
+                            local bg = Instance.new("Frame", healthGui)
+                            bg.Name = "BG"
+                            bg.Size = UDim2.new(0.05, 0, 1, 0)
+                            bg.Position = UDim2.new(0, 0, 0, 0)
+                            bg.BackgroundColor3 = Color3.new(0,0,0)
+                            bg.BackgroundTransparency = 0.3
+                            bg.BorderSizePixel = 1
+                            bg.BorderColor3 = Color3.new(1,1,1)
+
+                            local fill = Instance.new("Frame", bg)
+                            fill.Name = "Fill"
+                            fill.Size = UDim2.new(1,0,1,0)
+                            fill.BackgroundColor3 = Color3.new(0,1,0)
+                            fill.BorderSizePixel = 0
+                            fill.BackgroundTransparency = 0.1
+                        end
+
+                        local fill = healthGui.BG.Fill
+                        local pct = math.clamp(humTarget.Health / humTarget.MaxHealth, 0, 1)
+                        fill.Size = UDim2.new(1,0,pct,0)
+                        fill.Position = UDim2.new(0,0,1-pct,0)
+                        fill.BackgroundColor3 = Color3.fromHSV(pct * 0.35, 1, 0.8)
+                        fill.BackgroundTransparency = 0.1
+                    else
+                        if root:FindFirstChild("XenoESP_Health") then root.XenoESP_Health:Destroy() end
+                    end
+                else
+                    clearPlayerESP(c)
+                end
+            end
+        end
+    else
+        clearAllESP()
+    end
+end)
 
 UIS.InputBegan:Connect(function(i, gp)
     if gp then return end
     
     if i.KeyCode == Enum.KeyCode.Q then
-        if settings.fly then
-            settings.fly = false
-            ToggleFly(false)
-            if flyToggleSlider then 
-                flyToggleSlider:SetEnabled(false)
-            end
-        else
-            settings.fly = true
-            ToggleFly(true)
-            if flyToggleSlider then 
-                flyToggleSlider:SetEnabled(true)
-            end
-        end
+        settings.fly = not settings.fly
+        ToggleFly(settings.fly)
+        if flyToggleSlider then flyToggleSlider:SetEnabled(settings.fly) end
     end
-    
+
     if i.KeyCode == Enum.KeyCode.P and UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
-        if settings.freecam then
-            settings.freecam = false
-            ToggleFreecam(false)
-            if freecamToggle then freecamToggle:Set(false) end
-        else
-            settings.freecam = true
-            ToggleFreecam(true)
-            if freecamToggle then freecamToggle:Set(true) end
-        end
+        settings.freecam = not settings.freecam
+        ToggleFreecam(settings.freecam)
+        if freecamToggle then freecamToggle:Set(settings.freecam) end
     end
-    
+
     if i.KeyCode == Enum.KeyCode.Space and settings.jumpBoost and player.Character then
         local hrp = player.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
             hrp.CFrame = hrp.CFrame + Vector3.new(0, settings.jumpPower, 0)
         end
     end
-    
+
     if settings.teleportToMouse and i.UserInputType == Enum.UserInputType.MouseButton1 and UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
         teleportToMouse()
+    end
+end)
+
+UIS.InputEnded:Connect(function(i, gp)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        isAiming = false
+        lockedPart = nil
     end
 end)
 
@@ -1152,4 +1269,4 @@ fadeOut:Play()
 task.wait(0.6)
 splashGui:Destroy()
 
-print("XENO DARK V17 by: Hilka-dilka(github) [MinimalUI]")
+print("XENO DARK V4 LOADED")
