@@ -5,7 +5,7 @@
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/secret/refs/heads/main/Xeno.lua"))()
 ```
-or
+or (old version)
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/secret/refs/heads/main/XenoUI2.lua"))()
 ```
