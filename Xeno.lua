@@ -545,7 +545,9 @@ local function getClosestTarget()
             local char = p.Character
             local humanoid = char:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
+                -- Проверяем Head и UpperTorso
                 local partsToCheck = {"Head", "UpperTorso"}
+                
                 for _, partName in pairs(partsToCheck) do
                     local part = char:FindFirstChild(partName)
                     if part then
@@ -564,7 +566,33 @@ local function getClosestTarget()
                             end
 
                             if not settings.wallCheck or visible then
-                                local score = (aimDist * 0.7) + (playerDist * 0.3)
+                                local score
+                                
+                                if settings.aimPart == "Head" then
+                                    -- Только голова
+                                    if partName == "Head" then
+                                        score = aimDist * 0.7 + playerDist * 0.3
+                                    else
+                                        score = math.huge
+                                    end
+                                elseif settings.aimPart == "Torso" then
+                                    -- Только торс
+                                    if partName == "UpperTorso" then
+                                        score = aimDist * 0.7 + playerDist * 0.3
+                                    else
+                                        score = math.huge
+                                    end
+                                else -- AUTO режим
+                                    -- Сравниваем обе части, выбираем ту, к которой мышь ближе
+                                    -- Голова имеет небольшой приоритет, но если мышь ближе к торсу - берем торс
+                                    if partName == "Head" then
+                                        -- Голова имеет бонус, но не такой большой, чтобы всегда доминировать
+                                        score = aimDist * 0.7 + playerDist * 0.3 - 0.1
+                                    else -- UpperTorso
+                                        score = aimDist * 0.7 + playerDist * 0.3
+                                    end
+                                end
+                                
                                 if aimDist < closestDist and score < bestScore then
                                     bestScore = score
                                     closestPlayer = p
@@ -590,6 +618,7 @@ local function smoothAim(targetPos, smoothness)
     cam.CFrame = newCF
 end
 
+-- Кнопки мыши для аима
 UIS.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -614,6 +643,7 @@ UIS.InputEnded:Connect(function(input, gp)
     end
 end)
 
+-- Основной рендер аима
 RunService.RenderStepped:Connect(function()
     if settings.showFovCircle and settings.aimbot and fovCircle then
         fovCircle.Position = Vector2.new(mouse.X, mouse.Y + 60)
@@ -823,15 +853,22 @@ freecamToggle = VisualSec:CreateToggle("Freecam (Shift+P)", false, function(v)
     ToggleFreecam(v)
 end)
 
+-- Вкладка аимбота
 local AIMTab = Window:CreateTab("🎯 AIMBOT")
--- aim
 local AimbotSec = AIMTab:CreateSection("🎯 AIM")
+
 AimbotSec:CreateToggle("Enable Aimbot", false, function(v) settings.aimbot = v end)
 AimbotSec:CreateSlider("Aimbot FOV", 10, 360, 90, function(v)
     settings.aimbotFov = v
     if fovCircle then fovCircle.Radius = v end
 end)
 AimbotSec:CreateSlider("Smoothness", 1, 10, 5, function(v) settings.aimbotSmoothness = v end)
+
+-- Дропдаун с тремя вариантами
+AimbotSec:CreateDropdown("Aim Target", {"Head", "Torso", "Auto"}, "Auto", function(selected)
+    settings.aimPart = selected
+end)
+
 AimbotSec:CreateToggle("Show FOV Circle", false, function(v) settings.showFovCircle = v end)
 AimbotSec:CreateToggle("Aim on Key (RMB)", false, function(v) settings.aimOnKey = v end)
 AimbotSec:CreateToggle("Wall Check", false, function(v) settings.wallCheck = v end)
