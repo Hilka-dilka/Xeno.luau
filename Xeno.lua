@@ -823,17 +823,6 @@ freecamToggle = VisualSec:CreateToggle("Freecam (Shift+P)", false, function(v)
     ToggleFreecam(v)
 end)
 
-local ESPTab = Window:CreateTab("☣️ ESP")
--- esp
-local ESPSec = ESPTab:CreateSection("🛡 ESP")
-ESPSec:CreateTogglePicker("ESP Highlight", settings.espHighlightColor, false, function(e, c)
-    settings.espHighlight = e
-    if typeof(c) == "Color3" then settings.espHighlightColor = c end
-end)
-ESPSec:CreateToggle("ESP Name", false, function(v) settings.espName = v end)
-ESPSec:CreateToggle("ESP Box", false, function(v) settings.espBox = v end)
-ESPSec:CreateToggle("ESP Health", false, function(v) settings.espHealth = v end)
-
 local AIMTab = Window:CreateTab("🎯 AIMBOT")
 -- aim
 local AimbotSec = AIMTab:CreateSection("🎯 AIM")
@@ -846,6 +835,20 @@ AimbotSec:CreateSlider("Smoothness", 1, 10, 5, function(v) settings.aimbotSmooth
 AimbotSec:CreateToggle("Show FOV Circle", false, function(v) settings.showFovCircle = v end)
 AimbotSec:CreateToggle("Aim on Key (RMB)", false, function(v) settings.aimOnKey = v end)
 AimbotSec:CreateToggle("Wall Check", false, function(v) settings.wallCheck = v end)
+
+
+local ESPTab = Window:CreateTab("☣️ ESP")
+-- esp
+local ESPSec = ESPTab:CreateSection("🛡 ESP")
+ESPSec:CreateTogglePicker("ESP Highlight", settings.espHighlightColor, false, function(e, c)
+    settings.espHighlight = e
+    if typeof(c) == "Color3" then settings.espHighlightColor = c end
+end)
+ESPSec:CreateToggle("ESP Name", false, function(v) settings.espName = v end)
+ESPSec:CreateToggle("ESP Box", false, function(v) settings.espBox = v end)
+ESPSec:CreateToggle("ESP Health", false, function(v) settings.espHealth = v end)
+
+
 
 -- other
 local OtherTab = Window:CreateTab("🛠 OTHER")
