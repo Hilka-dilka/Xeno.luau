@@ -50,6 +50,7 @@ local settings = {
     showFovCircle = false,
     aimOnKey = false,
     wallCheck = false,
+    teamCheck = false,
     aimKey = Enum.UserInputType.MouseButton2,
     gravityEnabled = false,
     gravityValue = 50,
@@ -506,30 +507,55 @@ local lockedPart = nil
 local isAiming = false
 local targetVisible = false
 
+local function isSameTeam(player1, player2)
+    if not player1 or not player2 then return false end
+    local team1 = player1.Team
+    local team2 = player2.Team
+    if not team1 or not team2 then return false end
+    return team1 == team2
+end
+
 local function isTargetVisible(targetPos, targetPart)
     if not player.Character or not player.Character:FindFirstChild("Head") then 
         return false 
     end
+    
+    local pos, onScreen = cam:WorldToViewportPoint(targetPos)
+    if not onScreen then return false end
+    
     local origin = cam.CFrame.Position
-    local direction = (targetPos - origin).Unit
     local distance = (targetPos - origin).Magnitude
+    
+    if distance > 1000 then return false end
     
     local raycastParams = RaycastParams.new()
     raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
     raycastParams.FilterDescendantsInstances = {player.Character}
     
+    local checkPos = targetPos + Vector3.new(0, 0.3, 0)
+    local direction = (checkPos - origin).Unit
+    
     local raycastResult = workspace:Raycast(origin, direction * distance, raycastParams)
-    if raycastResult then
-        local hit = raycastResult.Instance
-        if targetPart and hit:IsDescendantOf(targetPart.Parent) then
-            return true
-        end
-        if hit.Transparency and hit.Transparency > 0.8 then
-            return true
-        end
-        return false
+    
+    if not raycastResult then
+        return true
     end
-    return true
+    
+    local hit = raycastResult.Instance
+    
+    if targetPart and hit:IsDescendantOf(targetPart.Parent) then
+        return true
+    end
+    
+    if hit.Transparency and hit.Transparency > 0.8 then
+        return true
+    end
+    
+    if hit.CanCollide == false then
+        return true
+    end
+    
+    return false
 end
 
 local function getClosestTarget()
@@ -542,11 +568,16 @@ local function getClosestTarget()
     
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= player and p.Character then
+            if settings.teamCheck then
+                if isSameTeam(player, p) then
+                    continue
+                end
+            end
+            
             local char = p.Character
             local humanoid = char:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                -- Проверяем Head и UpperTorso
-                local partsToCheck = {"Head", "UpperTorso"}
+                local partsToCheck = {"Head", "HumanoidRootPart"}
                 
                 for _, partName in pairs(partsToCheck) do
                     local part = char:FindFirstChild(partName)
@@ -569,26 +600,21 @@ local function getClosestTarget()
                                 local score
                                 
                                 if settings.aimPart == "Head" then
-                                    -- Только голова
                                     if partName == "Head" then
                                         score = aimDist * 0.7 + playerDist * 0.3
                                     else
                                         score = math.huge
                                     end
                                 elseif settings.aimPart == "Torso" then
-                                    -- Только торс
-                                    if partName == "UpperTorso" then
+                                    if partName == "HumanoidRootPart" then
                                         score = aimDist * 0.7 + playerDist * 0.3
                                     else
                                         score = math.huge
                                     end
-                                else -- AUTO режим
-                                    -- Сравниваем обе части, выбираем ту, к которой мышь ближе
-                                    -- Голова имеет небольшой приоритет, но если мышь ближе к торсу - берем торс
+                                else
                                     if partName == "Head" then
-                                        -- Голова имеет бонус, но не такой большой, чтобы всегда доминировать
                                         score = aimDist * 0.7 + playerDist * 0.3 - 0.1
-                                    else -- UpperTorso
+                                    else
                                         score = aimDist * 0.7 + playerDist * 0.3
                                     end
                                 end
@@ -618,7 +644,6 @@ local function smoothAim(targetPos, smoothness)
     cam.CFrame = newCF
 end
 
--- Кнопки мыши для аима
 UIS.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -643,7 +668,6 @@ UIS.InputEnded:Connect(function(input, gp)
     end
 end)
 
--- Основной рендер аима
 RunService.RenderStepped:Connect(function()
     if settings.showFovCircle and settings.aimbot and fovCircle then
         fovCircle.Position = Vector2.new(mouse.X, mouse.Y + 60)
@@ -710,15 +734,14 @@ RunService.RenderStepped:Connect(function()
     
     if settings.aimbot then
         local shouldAim = false
+        
         if settings.aimOnKey then
-            if settings.aimKey == Enum.UserInputType.MouseButton2 then
-                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
-            elseif settings.aimKey == Enum.UserInputType.MouseButton1 then
-                shouldAim = UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
-            elseif settings.aimKey == Enum.KeyCode.LeftAlt then
-                shouldAim = UIS:IsKeyDown(Enum.KeyCode.LeftAlt)
-            else
-                shouldAim = UIS:IsKeyDown(settings.aimKey)
+            if typeof(settings.aimKey) == "EnumItem" then
+                if settings.aimKey.EnumType == Enum.UserInputType then
+                    shouldAim = UIS:IsMouseButtonPressed(settings.aimKey)
+                elseif settings.aimKey.EnumType == Enum.KeyCode then
+                    shouldAim = UIS:IsKeyDown(settings.aimKey)
+                end
             end
         else
             shouldAim = true
@@ -736,7 +759,7 @@ RunService.RenderStepped:Connect(function()
                     smoothAim(aimAt.Position, smoothness)
                 end
             end
-        elseif not shouldAim then
+        else
             isAiming = false
             lockedPart = nil
         end
@@ -780,9 +803,19 @@ local function disableNoclip()
         noclipConnection = nil
     end
     if player.Character then
+        -- Части, которые должны иметь коллизию (НЕ проходить сквозь стены)
+        local partsWithCollision = {"HumanoidRootPart", "LeftLeg", "RightLeg", "Torso"}
+        
         for _, part in pairs(player.Character:GetDescendants()) do
             if part:IsA("BasePart") then
-                part.CanCollide = true
+                local hasCollision = false
+                for _, name in pairs(partsWithCollision) do
+                    if part.Name == name then
+                        hasCollision = true
+                        break
+                    end
+                end
+                part.CanCollide = hasCollision
             end
         end
     end
@@ -793,7 +826,7 @@ local function toggleNoclip(state)
 end
 
 -- UI
-local Window = MinimalUI:CreateWindow("XENO DARK V4")
+local Window = MinimalUI:CreateWindow("XENO DARK")
 Window:SetTheme(Color3.fromRGB(0, 60, 150))
 Window:SetMenuTheme("dark")
 
@@ -822,7 +855,7 @@ local teleportToMouseToggle = nil
 local CombatTab = Window:CreateTab("😎 MAIN")
 
 -- movement
-local MovementSec = CombatTab:CreateSection("🏃 MOVEMENT")
+local MovementSec = CombatTab:CreateSection("MOVEMENT")
 flyToggleSlider = MovementSec:CreateToggleSlider("Fly (Q)", 0.1, 5, 0.8, false, function(e, v)
     settings.fly = e; settings.flySpeed = v; ToggleFly(e)
 end)
@@ -841,8 +874,8 @@ end)
 MovementSec:CreateToggle("No Jump Cooldown", false, function(v) settings.noJumpCooldown = v end)
 
 -- visuals
-local VisualSec = CombatTab:CreateSection("👁 VISUAL")
-VisualSec:CreateToggle("FullBright", false, function(v) settings.fullbright = v end)
+local VisualSec = CombatTab:CreateSection("OTHER")
+-- VisualSec:CreateToggle("FullBright", false, function(v) settings.fullbright = v end)
 VisualSec:CreateToggle("NoClip", false, function(v) toggleNoclip(v) end)
 hitboxToggleSlider = VisualSec:CreateToggleSlider("Hitbox Extender", 1, 20, 5, false, function(e, v)
     settings.hitbox = e; settings.hitboxSize = v
@@ -853,9 +886,9 @@ freecamToggle = VisualSec:CreateToggle("Freecam (Shift+P)", false, function(v)
     ToggleFreecam(v)
 end)
 
--- Вкладка аимбота
+-- aim
 local AIMTab = Window:CreateTab("🎯 AIMBOT")
-local AimbotSec = AIMTab:CreateSection("🎯 AIM")
+local AimbotSec = AIMTab:CreateSection("Main")
 
 AimbotSec:CreateToggle("Enable Aimbot", false, function(v) settings.aimbot = v end)
 AimbotSec:CreateSlider("Aimbot FOV", 10, 360, 90, function(v)
@@ -863,20 +896,24 @@ AimbotSec:CreateSlider("Aimbot FOV", 10, 360, 90, function(v)
     if fovCircle then fovCircle.Radius = v end
 end)
 AimbotSec:CreateSlider("Smoothness", 1, 10, 5, function(v) settings.aimbotSmoothness = v end)
-
--- Дропдаун с тремя вариантами
-AimbotSec:CreateDropdown("Aim Target", {"Head", "Torso", "Auto"}, "Auto", function(selected)
+AimbotSec:CreateDropdown("Target Part", {"Auto", "Head", "Torso", }, "Auto", function(selected)
     settings.aimPart = selected
 end)
-
 AimbotSec:CreateToggle("Show FOV Circle", false, function(v) settings.showFovCircle = v end)
-AimbotSec:CreateToggle("Aim on Key (RMB)", false, function(v) settings.aimOnKey = v end)
+AimbotSec:CreateToggle("Aim on key", false, function(v) 
+    settings.aimOnKey = v
+end)
+AimbotSec:CreateKeybind("Aim Key", Enum.KeyCode.LeftAlt, function(key)
+    settings.aimKey = key
+    settings.aimOnKey = true
+end)
 AimbotSec:CreateToggle("Wall Check", false, function(v) settings.wallCheck = v end)
+AimbotSec:CreateToggle("Team Check", false, function(v) settings.teamCheck = v end)
 
-
-local ESPTab = Window:CreateTab("☣️ ESP")
 -- esp
-local ESPSec = ESPTab:CreateSection("🛡 ESP")
+local ESPTab = Window:CreateTab("☣️ ESP")
+
+local ESPSec = ESPTab:CreateSection("Main")
 ESPSec:CreateTogglePicker("ESP Highlight", settings.espHighlightColor, false, function(e, c)
     settings.espHighlight = e
     if typeof(c) == "Color3" then settings.espHighlightColor = c end
@@ -886,12 +923,156 @@ ESPSec:CreateToggle("ESP Box", false, function(v) settings.espBox = v end)
 ESPSec:CreateToggle("ESP Health", false, function(v) settings.espHealth = v end)
 
 
+local WorldTab = Window:CreateTab("🌍 World")
+local WorldSec = WorldTab:CreateSection("Main")
+
+WorldSec:CreateToggle("FullBright", false, function(v) 
+    settings.fullbright = v 
+end)
+WorldSec:CreateDualButton("☀️ Day", "🌙 Night", "left", function(side)
+    local Lighting = game:GetService("Lighting")
+    if side == "left" then 
+        Lighting.ClockTime = 14
+        Lighting.Brightness = 2
+        Lighting.Ambient = Color3.fromRGB(128, 128, 128)
+        Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+    else 
+        Lighting.ClockTime = 0
+        Lighting.Brightness = 0.5
+        Lighting.Ambient = Color3.fromRGB(20, 20, 40)
+        Lighting.OutdoorAmbient = Color3.fromRGB(20, 20, 40)
+    end
+end)
+local savedMaterials = {}
+WorldSec:CreateToggle("No Textures", false, function(v)
+    if v then
+        savedMaterials = {}
+        for _, part in pairs(workspace:GetDescendants()) do
+            if part:IsA("BasePart") then
+                savedMaterials[part] = part.Material
+                part.Material = Enum.Material.SmoothPlastic
+            end
+        end
+    else
+        for part, material in pairs(savedMaterials) do
+            if part and part.Parent then
+                part.Material = material
+            end
+        end
+        savedMaterials = {}
+    end
+end)
+WorldSec:CreateToggle("No Shadows", false, function(v)
+    local Lighting = game:GetService("Lighting")
+    Lighting.GlobalShadows = not v
+    for _, light in pairs(workspace:GetDescendants()) do
+        if light:IsA("Light") then
+            light.Shadows = not v
+        end
+    end
+end)
+WorldSec:CreateToggle("No Fog", false, function(v)
+    local Lighting = game:GetService("Lighting")
+    if v then
+        Lighting.FogEnd = 100000
+        Lighting.FogStart = 0
+    else
+        Lighting.FogEnd = 1000
+        Lighting.FogStart = 0
+    end
+end)
+local savedDecals = {}
+WorldSec:CreateToggle("No Decals", false, function(v)
+    if v then
+        savedDecals = {}
+        for _, decal in pairs(workspace:GetDescendants()) do
+            if decal:IsA("Decal") or decal:IsA("Texture") then
+                savedDecals[decal] = decal.Transparency
+                decal.Transparency = 1
+            end
+        end
+    else
+        for decal, transparency in pairs(savedDecals) do
+            if decal and decal.Parent then
+                decal.Transparency = transparency
+            end
+        end
+        savedDecals = {}
+    end
+end)
+WorldSec:CreateToggle("No Water Reflect", false, function(v)
+    for _, part in pairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and part.Material == Enum.Material.Water then
+            part.Reflectance = v and 0 or 0.5
+        end
+    end
+end)
+local savedTransparency = {}
+WorldSec:CreateToggle("X-Ray", false, function(v)
+    local player = game.Players.LocalPlayer
+    if v then
+        savedTransparency = {}
+        for _, part in pairs(workspace:GetDescendants()) do
+            if part:IsA("BasePart") and not part:IsDescendantOf(player.Character) then
+                savedTransparency[part] = part.Transparency
+                part.Transparency = 0.5
+            end
+        end
+    else
+        for part, transparency in pairs(savedTransparency) do
+            if part and part.Parent then
+                part.Transparency = transparency
+            end
+        end
+        savedTransparency = {}
+    end
+end)
+local bloomEffect = nil
+WorldSec:CreateToggleSlider("Bloom", 0, 100, 50, false, function(e, v)
+    local Lighting = game:GetService("Lighting")
+    if e then
+        if bloomEffect then bloomEffect:Destroy() end
+        
+        bloomEffect = Instance.new("BloomEffect")
+        bloomEffect.Name = "XenoBloom"
+        bloomEffect.Intensity = v / 100
+        bloomEffect.Size = 16
+        bloomEffect.Threshold = 0.8
+        bloomEffect.Parent = Lighting
+    else
+        if bloomEffect then
+            bloomEffect:Destroy()
+            bloomEffect = nil
+        end
+    end
+end, function(v)
+    if bloomEffect then
+        bloomEffect.Intensity = v / 100
+    end
+end)
+
+local atmosphereEffect = nil
+WorldSec:CreateColorPicker("Atmosphere", Color3.fromRGB(135, 206, 235), function(color)
+    local Lighting = game:GetService("Lighting")
+    if not atmosphereEffect then
+        atmosphereEffect = Lighting:FindFirstChild("XenoAtmosphere")
+        if not atmosphereEffect then
+            atmosphereEffect = Instance.new("Atmosphere")
+            atmosphereEffect.Name = "XenoAtmosphere"
+            atmosphereEffect.Parent = Lighting
+        end
+    end
+    atmosphereEffect.Color = color
+    atmosphereEffect.Density = 0.5
+    atmosphereEffect.Offset = 0.5
+    atmosphereEffect.Decay = Color3.new(1, 1, 1)
+end)
 
 -- other
 local OtherTab = Window:CreateTab("🛠 OTHER")
 
 -- view
-local ViewSec = OtherTab:CreateSection("👁 VIEW")
+local ViewSec = OtherTab:CreateSection("VIEW")
 local selectedViewPlayer = nil
 local isSpectating = false
 local viewPlayerDropdown = nil
@@ -962,7 +1143,7 @@ ViewSec:CreateToggle("Spectate Mode", false, function(v)
 end)
 
 -- tp
-local TeleportSec = OtherTab:CreateSection("📍 TELEPORT")
+local TeleportSec = OtherTab:CreateSection("TELEPORT")
 local selectedPlayer = nil
 local playerDropdown = nil
 local teleportTextBoxApi = nil
@@ -1025,14 +1206,14 @@ TeleportSec:CreateButton("Teleport to Camera", function()
     end
 end)
 
-TeleportSec:CreateButton("🔄 Refresh List", function() refreshPlayerDropdown() end)
+TeleportSec:CreateButton("Refresh List", function() refreshPlayerDropdown() end)
 
-teleportToMouseToggle = TeleportSec:CreateToggle("🎯 Tp to Mouse (Ctrl+LMB)", false, function(v)
+teleportToMouseToggle = TeleportSec:CreateToggle("Tp to Mouse (Ctrl+LBM)", false, function(v)
     settings.teleportToMouse = v
 end)
 
 
-local DeleteToolsSec = OtherTab:CreateSection("🗑 DELETE TOOLS")
+local DeleteToolsSec = OtherTab:CreateSection("DELETE TOOLS")
 
 local deleting = false
 local history = {}
@@ -1041,7 +1222,7 @@ DeleteToolsSec:CreateToggle("Delete Mode", false, function(v)
     deleting = v
 end)
 
-DeleteToolsSec:CreateButton("↩ Restore All", function()
+DeleteToolsSec:CreateButton("Restore All", function()
     local count = #history
     if count == 0 then
         print("Nothing to restore!")
@@ -1084,9 +1265,9 @@ end)
 -- info
 local InfoTab = Window:CreateTab("ℹ INFO")
 local InfoSec = InfoTab:CreateSection("ABOUT")
-InfoSec:CreateButton("XENO DARK V4", function() print("XENO DARK V4 - Ultimate Cheat Hub by: Hilka-dilka (github)") end)
+InfoSec:CreateButton("XENO DARK", function() print("XENO DARK") end)
 InfoSec:CreateButton("Credits: Hilka-dilka , MinimalUI (github)", function() end)
-InfoSec:CreateButton("Version: 4.0", function() end)
+InfoSec:CreateButton("Version: 4.1", function() end)
 
 --update
 local lastESPUpdate = 0
@@ -1310,4 +1491,4 @@ fadeOut:Play()
 task.wait(0.6)
 splashGui:Destroy()
 
-print("XENO DARK V4 LOADED")
+print("XENO DARK V4.1 LOADED")
