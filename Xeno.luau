@@ -269,7 +269,7 @@ task.wait(0.8)
 task.wait(0.5)
 
 -- library
-local MinimalUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI.lua"))()
+local MinimalUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/MinimalUI/main/MinimalUI.luau"))()
 
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
