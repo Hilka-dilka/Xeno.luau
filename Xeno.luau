@@ -38,7 +38,7 @@ local settings = {
     jumpBoost = false, jumpPower = 3.5,
     noJumpCooldown = false,
     espHighlight = false, espHighlightColor = Color3.fromRGB(0, 60, 150),
-    espName = false, espBox = false, espHealth = false,
+    espName = false, espBox = false, espHealth = false, espTeam = false,
     fullbright = false,
     noclip = false,
     hitbox = false, hitboxSize = 5,
@@ -919,6 +919,7 @@ ESPSec:CreateTogglePicker("ESP Highlight", settings.espHighlightColor, false, fu
     if typeof(c) == "Color3" then settings.espHighlightColor = c end
 end)
 ESPSec:CreateToggle("ESP Name", false, function(v) settings.espName = v end)
+ESPSec:CreateToggle("ESP TeamName", false, function(v) settings.espTeam = v end)
 ESPSec:CreateToggle("ESP Box", false, function(v) settings.espBox = v end)
 ESPSec:CreateToggle("ESP Health", false, function(v) settings.espHealth = v end)
 
@@ -1290,7 +1291,6 @@ RunService.RenderStepped:Connect(function(dt)
     local hrp = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChildOfClass("Humanoid")
 
-
     if hrp and hum and not settings.freecam then
         if settings.noJumpCooldown and UIS:IsKeyDown(Enum.KeyCode.Space) then
             hum:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
@@ -1347,7 +1347,7 @@ RunService.RenderStepped:Connect(function(dt)
         end
     end
 
-    if settings.espHighlight or settings.espName or settings.espBox or settings.espHealth then
+    if settings.espHighlight or settings.espName or settings.espBox or settings.espHealth or settings.espTeam then
         for _, p in pairs(Players:GetPlayers()) do
             if p ~= player and p.Character then
                 local c = p.Character
@@ -1366,12 +1366,52 @@ RunService.RenderStepped:Connect(function(dt)
                         if c:FindFirstChild("XenoESP_Highlight") then c.XenoESP_Highlight:Destroy() end
                     end
 
+                    -- ESP Team (выше ESP Name)
+                    if settings.espTeam then
+                        if not c:FindFirstChild("XenoESP_Team") then
+                            local bg = Instance.new("BillboardGui", c)
+                            bg.Name = "XenoESP_Team"
+                            bg.Size = UDim2.new(0, 150, 0, 25)
+                            bg.StudsOffset = Vector3.new(0, 3.8, 0)  -- Выше имени
+                            bg.AlwaysOnTop = true
+                            local teamLabel = Instance.new("TextLabel", bg)
+                            teamLabel.Name = "TeamLabel"
+                            teamLabel.Size = UDim2.new(1,0,1,0)
+                            teamLabel.BackgroundTransparency = 1
+                            teamLabel.Text = p.Team and p.Team.Name or "No Team"
+                            -- Цвет текста равен цвету команды
+                            if p.Team then
+                                teamLabel.TextColor3 = p.Team.TeamColor and p.Team.TeamColor.Color or Color3.new(1,1,1)
+                            else
+                                teamLabel.TextColor3 = Color3.new(0.5,0.5,0.5)
+                            end
+                            teamLabel.TextStrokeColor3 = Color3.new(0,0,0)
+                            teamLabel.TextStrokeTransparency = 0
+                            teamLabel.Font = Enum.Font.GothamBold
+                            teamLabel.TextSize = 12
+                        else
+                            -- Обновляем цвет команды
+                            local teamLabel = c.XenoESP_Team:FindFirstChild("TeamLabel")
+                            if teamLabel then
+                                if p.Team then
+                                    teamLabel.Text = p.Team.Name
+                                    teamLabel.TextColor3 = p.Team.TeamColor and p.Team.TeamColor.Color or Color3.new(1,1,1)
+                                else
+                                    teamLabel.Text = "No Team"
+                                    teamLabel.TextColor3 = Color3.new(0.5,0.5,0.5)
+                                end
+                            end
+                        end
+                    else
+                        if c:FindFirstChild("XenoESP_Team") then c.XenoESP_Team:Destroy() end
+                    end
+
                     if settings.espName then
                         if not c:FindFirstChild("XenoESP_Name") then
                             local bg = Instance.new("BillboardGui", c)
                             bg.Name = "XenoESP_Name"
                             bg.Size = UDim2.new(0, 100, 0, 30)
-                            bg.StudsOffset = Vector3.new(0, 3, 0)
+                            bg.StudsOffset = Vector3.new(0, 2.2, 0)  -- Ниже Team
                             bg.AlwaysOnTop = true
                             local name = Instance.new("TextLabel", bg)
                             name.Size = UDim2.new(1,0,1,0)
