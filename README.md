@@ -3,9 +3,9 @@
 
 # load xeno.lua
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/Xeno.lua/refs/heads/main/Xeno.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/Xeno.lua/refs/heads/main/Xeno.luau"))()
 ```
 or (old version)
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/Xeno.lua/refs/heads/main/XenoUI2.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Hilka-dilka/Xeno.lua/refs/heads/main/XenoUI2.luau"))()
 ```
