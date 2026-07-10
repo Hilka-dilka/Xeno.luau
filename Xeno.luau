@@ -1348,147 +1348,154 @@ RunService.RenderStepped:Connect(function(dt)
     end
 
     if settings.espHighlight or settings.espName or settings.espBox or settings.espHealth or settings.espTeam then
-        for _, p in pairs(Players:GetPlayers()) do
-            if p ~= player and p.Character then
-                local c = p.Character
-                local humTarget = c:FindFirstChildOfClass("Humanoid")
-                local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
-                if humTarget and humTarget.Health > 0 and root then
-                    
-                    if settings.espHighlight then
-                        local h = c:FindFirstChild("XenoESP_Highlight") or Instance.new("Highlight", c)
-                        h.Name = "XenoESP_Highlight"
-                        h.FillColor = settings.espHighlightColor
-                        h.FillTransparency = 0.5
-                        h.OutlineColor = Color3.new(1,1,1)
-                        h.OutlineTransparency = 0
-                    else
-                        if c:FindFirstChild("XenoESP_Highlight") then c.XenoESP_Highlight:Destroy() end
-                    end
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player and p.Character then
+            local c = p.Character
+            local humTarget = c:FindFirstChildOfClass("Humanoid")
+            local root = c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("Torso")
+            local head = c:FindFirstChild("Head")
+            
+            if humTarget and humTarget.Health > 0 and root and head then
+                
+                if settings.espHighlight then
+                    local h = c:FindFirstChild("XenoESP_Highlight") or Instance.new("Highlight", c)
+                    h.Name = "XenoESP_Highlight"
+                    h.FillColor = settings.espHighlightColor
+                    h.FillTransparency = 0.5
+                    h.OutlineColor = Color3.new(1,1,1)
+                    h.OutlineTransparency = 0
+                else
+                    if c:FindFirstChild("XenoESP_Highlight") then c.XenoESP_Highlight:Destroy() end
+                end
 
-                    -- ESP Team (выше ESP Name)
-                    if settings.espTeam then
-                        if not c:FindFirstChild("XenoESP_Team") then
-                            local bg = Instance.new("BillboardGui", c)
-                            bg.Name = "XenoESP_Team"
-                            bg.Size = UDim2.new(0, 150, 0, 25)
-                            bg.StudsOffset = Vector3.new(0, 3.8, 0)  -- Выше имени
-                            bg.AlwaysOnTop = true
-                            local teamLabel = Instance.new("TextLabel", bg)
-                            teamLabel.Name = "TeamLabel"
-                            teamLabel.Size = UDim2.new(1,0,1,0)
-                            teamLabel.BackgroundTransparency = 1
-                            teamLabel.Text = p.Team and p.Team.Name or "No Team"
-                            -- Цвет текста равен цвету команды
+                -- ESP Team (над головой)
+                if settings.espTeam then
+                    if not head:FindFirstChild("XenoESP_Team") then
+                        local bg = Instance.new("BillboardGui", head)
+                        bg.Name = "XenoESP_Team"
+                        bg.Size = UDim2.new(0, 150, 0, 25)
+                        bg.StudsOffset = Vector3.new(0, 2.0, 0)  -- 2 студа над головой
+                        bg.AlwaysOnTop = true
+                        bg.MaxDistance = 500
+                        bg.SizeOffset = Vector2.new(0, 0)
+                        
+                        local teamLabel = Instance.new("TextLabel", bg)
+                        teamLabel.Name = "TeamLabel"
+                        teamLabel.Size = UDim2.new(1,0,1,0)
+                        teamLabel.BackgroundTransparency = 1
+                        teamLabel.Text = p.Team and p.Team.Name or "No Team"
+                        if p.Team then
+                            teamLabel.TextColor3 = p.Team.TeamColor and p.Team.TeamColor.Color or Color3.new(1,1,1)
+                        else
+                            teamLabel.TextColor3 = Color3.new(0.5,0.5,0.5)
+                        end
+                        teamLabel.TextStrokeColor3 = Color3.new(0,0,0)
+                        teamLabel.TextStrokeTransparency = 0
+                        teamLabel.Font = Enum.Font.GothamBold
+                        teamLabel.TextSize = 12
+                    else
+                        local teamLabel = head.XenoESP_Team:FindFirstChild("TeamLabel")
+                        if teamLabel then
                             if p.Team then
+                                teamLabel.Text = p.Team.Name
                                 teamLabel.TextColor3 = p.Team.TeamColor and p.Team.TeamColor.Color or Color3.new(1,1,1)
                             else
+                                teamLabel.Text = "No Team"
                                 teamLabel.TextColor3 = Color3.new(0.5,0.5,0.5)
                             end
-                            teamLabel.TextStrokeColor3 = Color3.new(0,0,0)
-                            teamLabel.TextStrokeTransparency = 0
-                            teamLabel.Font = Enum.Font.GothamBold
-                            teamLabel.TextSize = 12
-                        else
-                            -- Обновляем цвет команды
-                            local teamLabel = c.XenoESP_Team:FindFirstChild("TeamLabel")
-                            if teamLabel then
-                                if p.Team then
-                                    teamLabel.Text = p.Team.Name
-                                    teamLabel.TextColor3 = p.Team.TeamColor and p.Team.TeamColor.Color or Color3.new(1,1,1)
-                                else
-                                    teamLabel.Text = "No Team"
-                                    teamLabel.TextColor3 = Color3.new(0.5,0.5,0.5)
-                                end
-                            end
                         end
-                    else
-                        if c:FindFirstChild("XenoESP_Team") then c.XenoESP_Team:Destroy() end
-                    end
-
-                    if settings.espName then
-                        if not c:FindFirstChild("XenoESP_Name") then
-                            local bg = Instance.new("BillboardGui", c)
-                            bg.Name = "XenoESP_Name"
-                            bg.Size = UDim2.new(0, 100, 0, 30)
-                            bg.StudsOffset = Vector3.new(0, 2.2, 0)  -- Ниже Team
-                            bg.AlwaysOnTop = true
-                            local name = Instance.new("TextLabel", bg)
-                            name.Size = UDim2.new(1,0,1,0)
-                            name.BackgroundTransparency = 1
-                            name.Text = p.Name
-                            name.TextColor3 = Color3.new(1,1,1)
-                            name.TextStrokeColor3 = Color3.new(0,0,0)
-                            name.TextStrokeTransparency = 0
-                            name.Font = Enum.Font.GothamBold
-                            name.TextSize = 13
-                        end
-                    else
-                        if c:FindFirstChild("XenoESP_Name") then c.XenoESP_Name:Destroy() end
-                    end
-
-                    if settings.espBox then
-                        if not root:FindFirstChild("XenoESP_Box") then
-                            local box = Instance.new("BillboardGui", root)
-                            box.Name = "XenoESP_Box"
-                            box.Size = UDim2.new(4,0,6,0)
-                            box.AlwaysOnTop = true
-                            local frame = Instance.new("Frame", box)
-                            frame.Size = UDim2.new(1,0,1,0)
-                            frame.BackgroundTransparency = 1
-                            local stroke = Instance.new("UIStroke", frame)
-                            stroke.Color = Color3.new(1,1,1)
-                            stroke.Thickness = 1
-                        end
-                    else
-                        if root:FindFirstChild("XenoESP_Box") then root.XenoESP_Box:Destroy() end
-                    end
-
-                    if settings.espHealth then
-                        local healthGui = root:FindFirstChild("XenoESP_Health")
-                        if not healthGui then
-                            healthGui = Instance.new("BillboardGui", root)
-                            healthGui.Name = "XenoESP_Health"
-                            healthGui.Size = UDim2.new(5, 0, 6, 0)
-                            healthGui.StudsOffset = Vector3.new(0, 0, 0)
-                            healthGui.AlwaysOnTop = true
-                            healthGui.Adornee = root
-                            healthGui.MaxDistance = 500
-
-                            local bg = Instance.new("Frame", healthGui)
-                            bg.Name = "BG"
-                            bg.Size = UDim2.new(0.05, 0, 1, 0)
-                            bg.Position = UDim2.new(0, 0, 0, 0)
-                            bg.BackgroundColor3 = Color3.new(0,0,0)
-                            bg.BackgroundTransparency = 0.3
-                            bg.BorderSizePixel = 1
-                            bg.BorderColor3 = Color3.new(1,1,1)
-
-                            local fill = Instance.new("Frame", bg)
-                            fill.Name = "Fill"
-                            fill.Size = UDim2.new(1,0,1,0)
-                            fill.BackgroundColor3 = Color3.new(0,1,0)
-                            fill.BorderSizePixel = 0
-                            fill.BackgroundTransparency = 0.1
-                        end
-
-                        local fill = healthGui.BG.Fill
-                        local pct = math.clamp(humTarget.Health / humTarget.MaxHealth, 0, 1)
-                        fill.Size = UDim2.new(1,0,pct,0)
-                        fill.Position = UDim2.new(0,0,1-pct,0)
-                        fill.BackgroundColor3 = Color3.fromHSV(pct * 0.35, 1, 0.8)
-                        fill.BackgroundTransparency = 0.1
-                    else
-                        if root:FindFirstChild("XenoESP_Health") then root.XenoESP_Health:Destroy() end
                     end
                 else
-                    clearPlayerESP(c)
+                    if head:FindFirstChild("XenoESP_Team") then head.XenoESP_Team:Destroy() end
                 end
+
+                -- ESP Name (под Team, над головой)
+                if settings.espName then
+                    if not head:FindFirstChild("XenoESP_Name") then
+                        local bg = Instance.new("BillboardGui", head)
+                        bg.Name = "XenoESP_Name"
+                        bg.Size = UDim2.new(0, 100, 0, 30)
+                        bg.StudsOffset = Vector3.new(0, 0.5, 0)  -- 0.5 студа над головой (под Team)
+                        bg.AlwaysOnTop = true
+                        bg.MaxDistance = 500
+                        bg.SizeOffset = Vector2.new(0, 0)
+                        
+                        local name = Instance.new("TextLabel", bg)
+                        name.Size = UDim2.new(1,0,1,0)
+                        name.BackgroundTransparency = 1
+                        name.Text = p.Name
+                        name.TextColor3 = Color3.new(1,1,1)
+                        name.TextStrokeColor3 = Color3.new(0,0,0)
+                        name.TextStrokeTransparency = 0
+                        name.Font = Enum.Font.GothamBold
+                        name.TextSize = 13
+                    end
+                else
+                    if head:FindFirstChild("XenoESP_Name") then head.XenoESP_Name:Destroy() end
+                end
+
+                if settings.espBox then
+                    if not root:FindFirstChild("XenoESP_Box") then
+                        local box = Instance.new("BillboardGui", root)
+                        box.Name = "XenoESP_Box"
+                        box.Size = UDim2.new(4,0,6,0)
+                        box.AlwaysOnTop = true
+                        local frame = Instance.new("Frame", box)
+                        frame.Size = UDim2.new(1,0,1,0)
+                        frame.BackgroundTransparency = 1
+                        local stroke = Instance.new("UIStroke", frame)
+                        stroke.Color = Color3.new(1,1,1)
+                        stroke.Thickness = 1
+                    end
+                else
+                    if root:FindFirstChild("XenoESP_Box") then root.XenoESP_Box:Destroy() end
+                end
+
+                if settings.espHealth then
+                    local healthGui = root:FindFirstChild("XenoESP_Health")
+                    if not healthGui then
+                        healthGui = Instance.new("BillboardGui", root)
+                        healthGui.Name = "XenoESP_Health"
+                        healthGui.Size = UDim2.new(5, 0, 6, 0)
+                        healthGui.StudsOffset = Vector3.new(0, 0, 0)
+                        healthGui.AlwaysOnTop = true
+                        healthGui.Adornee = root
+                        healthGui.MaxDistance = 500
+
+                        local bg = Instance.new("Frame", healthGui)
+                        bg.Name = "BG"
+                        bg.Size = UDim2.new(0.05, 0, 1, 0)
+                        bg.Position = UDim2.new(0, 0, 0, 0)
+                        bg.BackgroundColor3 = Color3.new(0,0,0)
+                        bg.BackgroundTransparency = 0.3
+                        bg.BorderSizePixel = 1
+                        bg.BorderColor3 = Color3.new(1,1,1)
+
+                        local fill = Instance.new("Frame", bg)
+                        fill.Name = "Fill"
+                        fill.Size = UDim2.new(1,0,1,0)
+                        fill.BackgroundColor3 = Color3.new(0,1,0)
+                        fill.BorderSizePixel = 0
+                        fill.BackgroundTransparency = 0.1
+                    end
+
+                    local fill = healthGui.BG.Fill
+                    local pct = math.clamp(humTarget.Health / humTarget.MaxHealth, 0, 1)
+                    fill.Size = UDim2.new(1,0,pct,0)
+                    fill.Position = UDim2.new(0,0,1-pct,0)
+                    fill.BackgroundColor3 = Color3.fromHSV(pct * 0.35, 1, 0.8)
+                    fill.BackgroundTransparency = 0.1
+                else
+                    if root:FindFirstChild("XenoESP_Health") then root.XenoESP_Health:Destroy() end
+                end
+            else
+                clearPlayerESP(c)
             end
         end
-    else
-        clearAllESP()
     end
+else
+    clearAllESP()
+end
 end)
 
 UIS.InputBegan:Connect(function(i, gp)
